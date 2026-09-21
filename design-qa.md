@@ -1,56 +1,41 @@
-# Shape Neighbor 2.1 — Design QA
+# Shape Neighbor 2.2 — Design QA
 
 **Final result: passed**
 
-## Scope and evidence
+## Target and evidence
 
-- Source visual truth: user-supplied `../cpsc1710-labs/lab-02/one-pixel.html`, rendered in its initial state. Source credits Xiuye Chen, CC BY 4.0.
-- Implementation: `your-new-lab.html`, initial default samples, input 60 by 30, k = 1, optional guide off.
-- Intent: adapt the reference's visual language and experiment affordances to the existing rectangle classifier. This is not a pixel-for-pixel recreation of the one-pixel lesson or its training workflow.
-- Capture browser: installed Microsoft Edge, headless, with the existing temporary Playwright harness. The in-app browser was unavailable. The context-preflight Python script could not run because Python is not installed; a direct read check found no saved Product Design context.
-- Desktop viewport: 1440 by 1100 CSS pixels, device scale factor 1. Source and implementation viewport captures use the same 1440 by 1100 pixel dimensions. The comparison sheet displays them at equal 50% scale; no unequal density adjustment was used.
-- Local capture directory: `%TEMP%/shape-neighbor-v2-checks/`. These QA captures are temporary local evidence, not runtime assets or files uploaded to Vercel.
-- Full-view comparison: `source-v3.png` and `v3-default.png`, combined in `v3-comparison.png`. The full implementation is also captured in `v3-full.png`.
-- Focused comparison: source input card `source-input-detail.png` and implementation card `v3-input-detail.png`, combined in `v3-detail-comparison.png`. Their card content intentionally differs; the comparison checks display type, border/shadow, spacing, shape treatment, controls, and callouts.
-- Responsive evidence: `v3-mobile.png`, captured at 390 by 844 CSS pixels as a full-page screenshot, plus programmatic layout checks at 1440, 1100, 1024, 820, 560, 390, and 320 pixel widths.
+- Selected source: the user's attached pink/chrome Shape Neighbor screenshot, with the second attachment's soft pink paper texture as the background-color direction. The previously considered pink-black arcade style was not selected for this implementation.
+- A refined image combined that layout with the softer background before implementation. Target artifact: `exec-e5df9724-79cd-45de-ad03-1eda5caf5338.png` in the session's generated-images folder. Chrome title asset: `exec-312602fb-d8b2-464c-9724-19098ace4605.png`. The supplied texture and title are embedded data URIs; there are no runtime asset requests.
+- Actual browser: installed Microsoft Edge, headless, using a temporary Playwright harness. The application was opened directly via `file://` with networking disabled. No application build or dependency was added.
+- Matched state: default samples, width 50, height 50, k = 3, guide off. Runtime input/k defaults remain 60 by 30 / k = 1. The mockup's illustrative sample coordinates and regions differ; live results must use the actual unchanged dataset.
+- Implementation capture: 1487 × 1058 CSS pixels, device scale factor 1. Comparison renders each full screenshot at equal 743.5-pixel width. Focused comparison uses the source and actual screenshot at equal 1487-pixel width with matching crops around the left panel. The reference is a raster design, so font rasterization is not expected to be pixel identical.
+- Temporary evidence folder: `%TEMP%/shape-neighbor-v2-checks/`. Files: `pink-desktop.png`, `pink-full.png`, `pink-input.png`, `pink-comparison.png`, `pink-detail-comparison.png`, `pink-mobile.png`, and `pink-small.png`.
 
-## Findings
+## Comparison and repair cycle
 
-No actionable P0, P1, or P2 findings remain in the inspected states.
+1. Inspected both supplied attachments and the existing app before editing. Used the selected layout, chrome heading, rounded panels, thin borders, and restrained pink/lavender palette.
+2. Captured the implementation and opened the combined full-view and focused comparisons, plus the mobile screenshot. Found a P2 spacing issue: the left panel and map were unnecessarily tall, pushing evidence and data navigation too far down.
+3. Tightened desktop preview captions and control spacing, reduced redundant always-visible helper copy, and adjusted the wide map's height. Preserved the 2-pixel-per-unit shape scale. Mobile retains its taller chart and explanatory text.
+4. Recaptured the same state and opened both revised combined comparisons. Main controls and evidence remain legible; no unresolved P0/P1/P2 issues were found in inspected states. The page intentionally extends farther than the mockup because it shows five nearest samples, non-voters, complete tie information, region/guide explanations, and working data tools.
 
-- **Fonts and typography:** matches the source's system sans-serif body, heavy display headings with tight tracking, and monospace labels. Headline wrapping is intentional for the narrower two-column experiment layout. Inputs and prediction have a clear hierarchy; long empty/tie explanations remain readable.
-- **Spacing and layout rhythm:** uses square cards, two-pixel black borders, hard offset shadows, approximately 22-pixel card padding/gaps, and a header divider. The input and map share the desktop workspace. Data editing and experiments extend below it because Shape Neighbor has more controls than the source. Navigation makes those sections directly reachable.
-- **Colors and tokens:** uses the reference's `#101114`, `#f4f1e8`, `#dbff4a`, `#ff6b35`, and `#4f74ff`. Lighter map-region colors preserve plot legibility. Point shapes, outlines, labels, and vote text supplement color. The current-input diamond is lime with a dark outline.
-- **Image/asset fidelity:** the reference's main experience uses code-rendered numeric stimuli rather than photography. Shape Neighbor retains its functional rectangle previews and SVG data visualization, as required by the existing product. No decorative raster substitutes, generated art, external fonts, icon libraries, or image dependencies were added.
-- **Copy/content:** simple English explains the rectangle experiment. Quick tries explicitly preserve samples and k. The map's grid approximation, exact input calculation, non-probabilistic distances/votes, and geometric-guide distinction are retained. Map instructions are expandable; no fake training process was introduced.
-- **Interaction and accessibility:** native labeled controls, visible keyboard focus, selected preset states, live result/status text, semantic tables, input validation, and post-deletion focus are retained. Reduced-motion preferences disable smooth anchor scrolling. Narrow tables scroll within their own containers without causing page overflow.
+## Required fidelity surfaces
 
-## Comparison history
+- **Typography:** system sans-serif text, strong plum headings, readable native controls, and the generated chrome wordmark. The product name also has text alternative content. The raster mockup's exact font is unavailable; the system face is an intentional dependency-free adaptation.
+- **Spacing/layout:** narrow input column, larger map column, prediction and neighbors together, full-width sample section below. Responsive layouts stack sections and keep tables within scroll containers. Desktop spacing was repaired after the first comparison.
+- **Colors:** supplied paper texture over a `#fed8df` base, translucent pale panels, dusty rose controls, lavender Horizontal regions and mauve Vertical points. Class distinction also uses circles/squares, words, and voter outlines. Current input uses a diamond.
+- **Image quality:** genuine-alpha chrome wordmark displayed at roughly 390 pixels wide from a 2172-pixel source. Transparent margins are cropped by its container. The user's texture remains subtly visible behind panels. Both assets are embedded; the larger HTML is approximately 0.94 MB. Functional shapes and map geometry stay CSS/SVG.
+- **Content:** simple English, numeric-feature classroom scope, exact-distance explanation, approximation disclosure for background regions, explicit geometry-guide distinction, and no confidence-percentage or artificial-training claims. Footer preserves course-source attribution.
 
-1. Captured and opened the supplied One Pixel reference and the prior Shape Neighbor implementation before editing. Identified the intended source palette, typography, borders/shadows, compact experiment controls, and dark insight panel.
-2. Implemented the reference-based interface adaptation while retaining the classifier and data operations.
-3. Opened the combined full-view reference/implementation sheet and the narrow-screen implementation; then opened a combined focused input-card comparison. The implementation preserves the source language. Differences in plot, data table, feature count, and page height are intentional product adaptations. No visual repair cycle was required after this comparison.
+## Verification actually performed
 
-## Verification
-
-- Reran 20,000 default input/mode comparisons against an independent oracle.
-- Reran real Edge `file://` offline tests for data editing, add/delete, duplicates, empty/insufficient samples, both tie rules, resets, exact versus displayed distances, map/table consistency, and numeric/keyboard controls.
-- Tested every Quick tries button, preserving edited samples and k, selected-state updates, keyboard activation, help expansion/collapse, and section navigation.
-- Checked seven responsive widths and inspected desktop/mobile screenshots. Browser regression checks reported no page JavaScript errors or external requests.
-- Confirmed `one-pixel.html` is unchanged. The standalone HTML still requires no build or external runtime dependency.
+- Full 20,000-case oracle check plus Edge controls for both k modes, voting ties, insufficient/empty samples, editing labels, add/delete, duplicate prevention, restore/reload, and input-only reset.
+- Region cells, plotted points, voting links, table distances and predictions checked for consistency. Full-precision rounding-collision case and keyboard interactions passed.
+- Asset loading, Add current input and Edit labels focus shortcuts, presets preserving edited data and k, map help, voter labels, and responsive map updates checked.
+- No overall overflow at 1660, 1487, 1250, 1100, 1024, 900, 820, 621, 620, 560, 390, or 320 pixels. Tables scroll inside their containers. Inspected desktop/full/focused and mobile captures.
+- Confirmed classifier/default code matches the prior commit and original `one-pixel.html` Git hash is unchanged.
 
 ## Remaining manual checks
 
-- Screen readers, other browsers, real touch devices, and the student's subjective classroom usability review.
-- Temporary screenshots are not bundled in Git; the captured source and implementation can be rendered again from their HTML files.
-
-## Implementation checklist
-
-- [x] Reference captured before changes; combined visual comparisons inspected.
-- [x] Core classifier and data operations preserved and retested.
-- [x] New input shortcuts and navigation tested.
-- [x] Original source files preserved; attribution included.
-- [x] Responsive layout and keyboard behavior checked.
-- [x] Ready for the user-authorized GitHub and Vercel publication.
+Other browsers, screen readers, real touch devices, and the student's subjective usability and color preference. Automated checks and assistant screenshot review are not student feedback.
 
 final result: passed

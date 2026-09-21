@@ -4,7 +4,7 @@ Author: Sining Chen
 
 This project started with the One Pixel ML demo. The original `one-pixel.html` is preserved unchanged.
 
-## Shape Neighbor: version 2.1
+## Shape Neighbor: version 2.2
 
 `your-new-lab.html` is a self-contained classroom experiment in nearest-neighbor classification.
 It uses numeric width and height, both whole numbers from 1 to 100, and the labels **Horizontal** and **Vertical**.
@@ -16,7 +16,7 @@ Version 2 extends the same project with:
 - Width and height sliders synchronized with numeric inputs, a fixed-scale rectangle preview, and the current prediction and vote counts.
 - Editable sample labels, adding the current rectangle with a chosen label, deleting individual samples, and restoring the defaults.
 - Duplicate-coordinate prevention: if the same width and height already exist, a message identifies that sample and focuses its label control instead of adding another copy.
-- A two-dimensional map with Width on the horizontal axis and Height increasing upward. Horizontal samples are blue circles; Vertical samples are orange squares. A dark-outlined diamond marks the current input. Lines and outlines identify every participating neighbor.
+- A two-dimensional map with Width on the horizontal axis and Height increasing upward. Horizontal samples are blue circles; Vertical samples are mauve squares. A rose diamond with a dark outline marks the current input. Lines and outlines identify every participating neighbor.
 - Pale model-prediction regions, k = 1 / k = 3 controls, and a nearest-sample table with IDs, dimensions, labels, distances, and voting status.
 - An optional dashed width = height line, explicitly labeled as a geometric guide rather than a model boundary.
 - Short experiments for changing a label, adding a sample, and comparing k values.
@@ -32,19 +32,22 @@ The page includes all HTML, CSS, and JavaScript. It works directly from disk wit
 
 Live app: [Shape Neighbor](https://shape-neighbor.vercel.app). Source and version history: [GitHub repository](https://github.com/Serenasnchen/Sining_Chen_HW2). You can also open the local HTML directly.
 
-## Interface refresh: version 2.1
+## Soft pink Y2K interface: version 2.2
 
-The user asked to adapt the UI/UX of the course reference at `../cpsc1710-labs/lab-02/one-pixel.html` while keeping this project and its working model.
+The user selected the attached pink/chrome layout and asked to use the gentler pink from a second texture image. This replaces the earlier One Pixel-inspired appearance while keeping the same project and classifier.
 
-- Applied the reference's warm paper background, black borders and hard shadows, bold display headings, monospace labels, lime highlights, and orange action buttons.
-- Reorganized the page into a two-column experiment workspace: shape/input/prediction on the left, model controls/map/neighbor evidence on the right. Compact sample editing and experiments follow below.
-- Added Lab / Samples / Experiments navigation, collapsible map explanations, and three Quick tries buttons. Quick tries change only width and height, preserving edited samples and k; their selected state follows the current input.
-- Retained all version 2 data operations, numeric-input validation, nearest-neighbor voting, ties, empty states, fixed preview scales, and the same classifier for the exact input and map.
-- Added source attribution in the page footer: visual style adapted from **One Pixel ML Lab by [Xiuye Chen](https://github.com/xiuyechen), CC BY 4.0**, as credited in the supplied reference. The layout, content, controls, and classifier are adapted for Shape Neighbor.
+- Soft blush background based on the actual supplied texture (average color approximately `#fed8df`), pale translucent panels, rose controls, lavender/mauve map colors, and a generated chrome wordmark. Both images are embedded in the HTML, so opening the page offline still works.
+- Desktop layout: input and k controls on the left; a wide map on the right; prediction and nearest-neighbor evidence together below it. Samples and experiments follow on the same page.
+- Experiment / Samples / About anchors, quick test inputs, and Add current input / Edit labels shortcuts. These shortcuts move keyboard focus to the existing form or sample label; they do not create an extra editing mode.
+- Voter IDs and dimensions appear beside up to six neighbors on wider plots. The nearest table always lists every voter, including larger tied groups. Map labels are omitted on small screens to avoid crowding.
+- Map axes adapt to screen width. Their physical lengths may differ; distance is always calculated from numeric width and height, not screen pixels. The rectangle preview still uses the original fixed scale.
+- Retained all 24 defaults, both k modes, full-precision voting, editable labels, add/delete, validation, empty states, and separate resets. The classifier and default data were checked against the previous commit and are unchanged.
 
-The reference and the existing `one-pixel.html` were read only. The app still uses one self-contained HTML file with no dependencies or build step. Attribution links do not load any external assets.
+The original `one-pixel.html` is untouched. The footer retains attribution to the course lab by [Xiuye Chen](https://github.com/xiuyechen), CC BY 4.0, and identifies this interface as redesigned for Shape Neighbor.
 
-The version 2 regression suite was rerun successfully, including 20,000 default input/mode combinations and real headless Edge data-editing tests. Additional checks covered Quick tries preserving edited data and k, active states, keyboard activation, help expansion, section links, and page overflow at 1440, 1100, 1024, 820, 560, 390, and 320 pixels. Reference and implementation screenshots were compared side by side at matched desktop viewport settings, with a focused input-panel comparison and a separate mobile review. See [design QA](design-qa.md). Screen-reader and real touch testing remain manual.
+Checks actually completed: all 20,000 input/mode cases against an independent oracle; offline direct-file Edge tests for edits, duplicates, empty/insufficient data, ties, resets, input synchronization, keyboard controls, and map/table consistency; rounded-distance collision case; new focus shortcuts, embedded image loading, and responsive map changes. Checked page overflow at 1660, 1487, 1250, 1100, 1024, 900, 820, 621, 620, 560, 390, and 320 pixels. Inspected combined reference/implementation screenshots and narrow layouts; see [design QA](design-qa.md).
+
+These were automated headless Edge checks and visual inspection by the assistant. Screen readers, other browsers, real touch devices, and the student's usability impressions remain to be tested; no student observations are claimed.
 
 ## Separate resets and input validation
 
@@ -175,3 +178,12 @@ Vercel is connected to the GitHub repository; a push can trigger a deployment. D
 - Reran the calculation and real-browser regression checks, tested the new controls and seven viewport widths, and compared reference/implementation screenshots. The model itself was not changed.
 - Publication uses the existing GitHub repository and Vercel site. Only the classifier page and routing configuration are included in the Vercel payload.
 - No classmate feedback, personal reflection, or student usability observations were invented.
+
+### 2026-09-21 — Version 2.2: selected soft pink Y2K design
+
+- Actual user feedback: the previous interface resembled the teacher's example too closely. The user wanted an individual pink Y2K style, then said the pink was too saturated. After comparing directions, the user supplied a selected pink/chrome layout and a second pale pink texture and asked to implement that combination.
+- Rebuilt the interface around those attachments, embedded the supplied texture and a generated chrome title asset, widened the map, grouped prediction with neighbor evidence, and added direct shortcuts to sample editing. This remains the same self-contained HTML project.
+- Preserved the original demo, default training set, exact classifier, all data operations, and attribution. No reference labels or predictions were changed to imitate the mockup's illustrative plot.
+- Reran the model/browser checks documented above. Compared full and focused screenshots with the selected target; tightened desktop spacing after the first comparison and checked the revised layout. Manual student testing is still pending.
+- The user's earlier authorization to commit, push to GitHub, and deploy checked versions to the existing Vercel project still applies. Only the classifier and routing configuration are included in the Vercel deployment allowlist.
+- No classmate feedback, personal reflection, or additional guidance records have been invented.
