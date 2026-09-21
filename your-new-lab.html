@@ -21,11 +21,25 @@
 @media(max-width:900px){main{padding:16px}.scope-note{display:none}.topbar{gap:10px}.brand{width:320px}.topbar nav a{padding:7px 14px}.workspace{grid-template-columns:1fr}.input-panel .shape-controls{display:grid;grid-template-columns:1fr 1fr;gap:25px;align-items:center}.input-panel figure{margin:14px 0}.input-controls{padding-top:10px}.reset-row{display:flex;align-items:center;gap:15px;margin-bottom:14px}.reset-row button{width:48%}.reset-row .note{margin:0;text-align:left}fieldset{display:grid;grid-template-columns:1fr 1fr;gap:0 20px}.modes{grid-column:1}.mode-note{grid-column:2;grid-row:2;align-self:center;font-size:12px}legend{grid-column:1/-1}.quick-tries{display:none}.map-head{flex-direction:row;gap:14px}.point-legend{max-width:300px}.evidence{grid-template-columns:minmax(0,.5fr) minmax(0,1fr);gap:18px}.result{display:block;border-bottom:0;border-right:1px solid #e6b5ce;padding:0 17px 0 0}#prediction{font-size:24px;margin-bottom:12px}.map-options{gap:10px}.data-layout{grid-template-columns:190px minmax(0,1fr);gap:14px}}
 @media(max-width:620px){main{padding:12px}.topbar{flex-wrap:wrap;justify-content:center;margin-bottom:13px;gap:4px}.brand{width:min(350px,100%);height:57px}.topbar nav{width:100%;margin:0;justify-content:center;padding:5px}.topbar nav a{flex:1;text-align:center;padding:7px 3px}.panel{padding:17px;border-radius:16px}h2{font-size:25px}.input-panel .shape-controls{display:block}.input-panel figure{margin:15px 0}.input-controls{display:grid;grid-template-columns:1fr 1fr;gap:16px;padding-top:2px}.control-head{gap:8px;justify-content:space-between}.control-head label{min-width:0;font-size:14px}input[type=number]{width:58px;font-size:15px;padding:4px 5px}.reset-row{display:block}.reset-row button{width:100%}.reset-row .note{margin:7px 0;text-align:center}fieldset{display:block}.mode-note{font-size:11px}.quick-tries{display:block}.map-head{flex-direction:column;gap:10px}.point-legend{max-width:100%;gap:12px;font-size:10px}.map-wrap{margin-left:-10px;margin-right:-5px}.map-options{margin-top:1px}.evidence{display:block;padding:15px}.result{border-right:0;border-bottom:1px solid #e6b5ce;padding:0 0 15px;margin-bottom:15px}#prediction{font-size:29px}.neighbors-head{align-items:flex-start;flex-direction:column;gap:0}.neighbors-head h3{margin-bottom:3px}.neighbors-head span{margin-bottom:5px}.data-actions{gap:6px;width:100%}.data-actions button{flex:1;font-size:11px;padding:7px 8px}.button-icon{display:none}.data-layout{grid-template-columns:1fr}.add-form{display:grid;grid-template-columns:1fr 1fr;gap:4px 12px;align-items:center}.add-form h3,.add-form p.note{grid-column:1/-1}.add-form label{grid-column:1}.add-form select{grid-column:1}.add-form button{grid-column:2;grid-row:3/5;align-self:center}.add-form #add-dimensions{grid-column:1/-1;margin-bottom:5px}.data-scroll{max-height:370px}.experiment-grid{grid-template-columns:1fr;gap:11px;margin:16px 0}.experiment-grid>div+div{border-left:0;border-top:1px solid #e9c4d7;padding:14px 0 0}.experiment-grid h3{margin-bottom:5px}.experiment-grid p{margin:0}.credit{font-size:10px}.sample-total{display:block;margin-top:5px;font-size:12px}}
 @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}button:active{transform:none}}
+/* Guided experiments extend the existing pink panels. */
+[hidden]{display:none!important}
+.experiment-grid button{width:100%;margin-bottom:9px;text-align:left}
+.experiment-grid button[aria-pressed=true]{background:#f3cee1;border-color:#bd6791}
+.comparison{border-top:1px solid var(--line);padding-top:18px;margin:18px 0}
+.comparison-head{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}
+.comparison-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:14px}
+.comparison-card{min-width:0;border:1px solid var(--line);border-radius:14px;padding:16px;background:#fff9fcaa}
+.compare-prediction{display:block;font-size:24px;font-weight:700;margin:6px 0}
+.compare-map{display:block;width:100%;max-width:390px;margin:8px auto}
+.compare-voters{font-size:12px;max-height:110px;overflow:auto;padding-left:22px;margin:7px 0}
+.comparison-card p{font-size:13px}.comparison-card h4{font-size:12px;margin:10px 0 3px}
+#experiment-context,#comparison-reason{font-size:13px;margin-top:10px}
+@media(max-width:620px){.comparison-grid{grid-template-columns:1fr}.comparison-card{padding:12px}}
 </style>
 </head>
 <body>
 <main>
-<header class="topbar"><h1 class="brand"><img id="brand-image" width="2172" height="724" alt="Shape Neighbor"></h1><div class="tagline">Explore shapes<br>Learn from neighbors</div><nav aria-label="Page sections"><a href="#lab" aria-current="location">Experiment</a><a href="#data">Samples</a><a href="#experiments">About</a></nav><p class="scope-note">Numeric features,<br>not image recognition.</p></header>
+<header class="topbar"><h1 class="brand"><img id="brand-image" width="2172" height="724" alt="Shape Neighbor"></h1><div class="tagline">Explore shapes<br>Learn from neighbors</div><nav aria-label="Page sections"><a href="#lab" aria-current="location">Experiment</a><a href="#data">Samples</a><a href="#experiments">Experiments</a></nav><p class="scope-note">Numeric features,<br>not image recognition.</p></header>
 <div class="workspace" id="lab"><section class="panel input-panel" aria-labelledby="input-heading"><h2 id="input-heading">Your rectangle</h2><p class="lede">Two numbers describe your rectangle.<br>Change the shape and see what its neighbors say.</p><div class="shape-controls">
         <figure><div class="stage" aria-hidden="true"><div id="preview"></div></div><figcaption id="preview-caption"></figcaption><p class="note figure-note">Fixed scale · 1 unit = 2 pixels</p></figure>
         <div class="input-controls">
@@ -53,7 +67,22 @@
     </div>
   </section>
   <section class="panel experiments" id="experiments" aria-labelledby="experiments-heading"><p class="eyebrow"><span>Go further</span> Small changes, real experiments</p><h2 id="experiments-heading">What changes the answer?</h2>
-    <div class="experiment-grid"><div><h3>One unexpected label</h3><p>Try 80 × 20 with k = 1. Change H09 to Vertical. Watch the prediction and its region change.</p></div><div><h3>Your own example</h3><p>Try 50 × 50. Choose a label and add it. Compare the nearby region, then delete the new sample.</p></div><div><h3>One neighbor or three?</h3><p>Restore defaults and try 50 × 50. Switch between k = 1 and k = 3. Follow the lines and count the votes.</p></div></div>
+    <p class="note">Starting an experiment replaces your current samples and sets the input and k. You can keep editing afterward.</p>
+    <div class="experiment-grid">
+      <div><button type="button" data-experiment="normal" aria-pressed="false">1. Normal labels</button><p>Try a new shape with the default labels. Which example is closest?</p></div>
+      <div><button type="button" data-experiment="odd" aria-pressed="false">2. One odd label</button><p>Change only H09's label. Can other neighbors change the vote?</p></div>
+      <div><button type="button" data-experiment="reversed" aria-pressed="false">3. Reversed labels</button><p>Keep every shape and swap every label. What does the model follow?</p></div>
+    </div>
+    <div id="experiment-comparison" class="comparison" hidden>
+      <div class="comparison-head"><h3 id="experiment-title"></h3><button id="exit-experiment" type="button">Exit comparison</button></div>
+      <p id="experiment-guide"></p>
+      <p class="note">Before = default samples saved at the start. After = current samples, including your edits. Both use the same current input and k. The main map and distance table show After.</p>
+      <p id="experiment-context"></p>
+      <div id="comparison-cards" class="comparison-grid"></div>
+      <p id="comparison-reason" role="status" aria-live="polite"></p>
+      <p class="note">Mini maps use the same model and approximate grid as the main map. ○ Horizontal · □ Vertical · ◇ Input; lines join voting neighbors. Distances are rounded only for display.</p>
+      <p class="note"><a href="#lab">Change input or k ↑</a> · <a href="#data">Edit samples ↑</a>. Exit comparison keeps your input, k, and samples.</p>
+    </div>
     <details><summary>What is the model actually doing?</summary><p>This classroom model uses numeric features (width and height) and labeled samples. It is not image recognition and needs no neural-network training.</p><p><code>distance = √((width − sample width)² + (height − sample height)²)</code></p><p>Sort by distance and let every sample at or inside the kth distance vote once. With fewer than k samples, use all of them. Equal vote counts produce Tie. With no samples, add one before predicting.</p><p>The model follows your labels even if a label seems geometrically wrong. It never replaces the neighbor calculation with a width-versus-height rule.</p></details>
   </section>
   <footer class="credit"><span>Shape Neighbor · Sining Chen · CPSC 1710</span><span>Built from the One Pixel course lab by <a href="https://github.com/xiuyechen" target="_blank" rel="noopener">Xiuye Chen</a> · Interface redesigned for Shape Neighbor · <a href="https://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener">CC BY 4.0</a></span></footer>
@@ -85,6 +114,7 @@ let samples = copyDefaults();
 let current = {width:60, height:30};
 let k = 1;
 let nextId = 25;
+let experiment = null;
 const $ = id => document.getElementById(id);
 
 // The exact prediction and the background grid use this SAME classifier.
@@ -119,18 +149,19 @@ function drawAxes() {
   $("map-axes").innerHTML=markup;
 }
 function drawRegions() {
-  if (!samples.length) {
-    $("map-background").innerHTML=`<rect x="${plot.left}" y="${plot.top}" width="${plot.width}" height="${plot.height}" fill="#f4edf4"/><text x="${plot.left+plot.width/2}" y="${plot.top+plot.height/2}" text-anchor="middle" fill="#79586f">Add samples to see prediction regions</text>`;
-    return;
-  }
-  const cells=50, cellWidth=plot.width/cells, cellHeight=plot.height/cells;
+  $("map-background").innerHTML=regionMarkup(samples,plot);
+}
+// The main map and comparison maps evaluate the same 50 × 50 numeric grid.
+function regionMarkup(data, area) {
+  if (!data.length) return `<rect x="${area.left}" y="${area.top}" width="${area.width}" height="${area.height}" fill="#f4edf4"/><text x="${area.left+area.width/2}" y="${area.top+area.height/2}" text-anchor="middle" font-size="12" fill="#79586f">Add samples to see prediction regions</text>`;
+  const cells=50, cellWidth=area.width/cells, cellHeight=area.height/cells;
   let markup="";
   for (let row=0;row<cells;row++) for(let col=0;col<cells;col++) {
     const width=1+(col+.5)*99/cells,height=100-(row+.5)*99/cells;
-    const prediction=classify(width,height).prediction;
-    markup+=`<rect x="${plot.left+col*cellWidth}" y="${plot.top+row*cellHeight}" width="${cellWidth}" height="${cellHeight}" fill="${regionColors[prediction]}" data-region="${prediction}"/>`;
+    const prediction=classify(width,height,data,k).prediction;
+    markup+=`<rect x="${area.left+col*cellWidth}" y="${area.top+row*cellHeight}" width="${cellWidth}" height="${cellHeight}" fill="${regionColors[prediction]}" data-region="${prediction}"/>`;
   }
-  $("map-background").innerHTML=markup;
+  return markup;
 }
 function drawGuide() {
   $("map-reference").innerHTML=$("geometry-line").checked ? `<path d="M${xPos(1)} ${yPos(1)} L${xPos(100)} ${yPos(100)}" stroke="#806886" stroke-width="1.5" stroke-dasharray="7 6" fill="none"><title>Width = height: geometric guide, not the model boundary</title></path>` : "";
@@ -203,7 +234,103 @@ function renderSamples() {
       <td><button type="button" class="delete" data-delete="${sample.id}" aria-label="Delete sample ${sample.id}">Delete</button></td>
     </tr>`).join("") : '<tr><td colspan="5">No samples. Add your rectangle or restore defaults.</td></tr>';
 }
-function renderCurrent() {
+const EXPERIMENTS = {
+  normal: {title:"Normal labels", width:78, height:22,
+    guide:"Start at 78 × 22: this shape is not in the default data. Which sample votes, and how far away is it? Matching Before and After results are expected until you edit the data."},
+  odd: {title:"One odd label", width:80, height:20,
+    guide:"At the start, only H09 changes from Horizontal to Vertical. Try k = 3 at 80 × 20 and count the votes. Several neighbors can offset one odd label; k = 3 is not always more accurate."},
+  reversed: {title:"Reversed labels", width:78, height:22,
+    guide:"At the start, every label is swapped and every coordinate stays the same. The model follows the labels: at the same input and k, non-Tie predictions swap and Tie stays Tie. Further edits may change this pattern."}
+};
+
+function startExperiment(type) {
+  const preset=EXPERIMENTS[type];
+  if (!preset) return;
+  samples=copyDefaults(); nextId=25;
+  current={width:preset.width,height:preset.height}; k=1;
+  // Separate immutable baseline; later edits cannot change Before.
+  const before=Object.freeze(copyDefaults().map(sample=>Object.freeze(sample)));
+  const beforeResult=classify(current.width,current.height,before,k);
+  experiment={type,before,mapCache:null};
+  if (type === "odd") samples.find(sample=>sample.id === "H09").label="Vertical";
+  if (type === "reversed") samples.forEach(sample=>{
+    sample.label=sample.label === "Horizontal" ? "Vertical" : "Horizontal";
+  });
+  document.querySelectorAll('input[name="mode"]').forEach(radio=>{radio.checked=Number(radio.value) === k;});
+  syncNumberFields(); renderSamples(); refreshModel(beforeResult);
+  $("data-message").textContent=`Started ${preset.title}. Samples, input, and k were replaced.`;
+}
+
+function clearExperiment() {
+  experiment=null;
+  $("experiment-comparison").hidden=true;
+  ["experiment-title","experiment-guide","experiment-context","comparison-cards","comparison-reason"].forEach(id=>{$(id).textContent="";});
+  document.querySelectorAll("[data-experiment]").forEach(button=>button.setAttribute("aria-pressed","false"));
+}
+
+function dataChanges(before,after) {
+  const originals=new Map(before.map(sample=>[sample.id,sample]));
+  const remaining=new Set(after.map(sample=>sample.id));
+  const added=after.filter(sample=>!originals.has(sample.id)).length;
+  const removed=before.filter(sample=>!remaining.has(sample.id)).length;
+  const changed=after.filter(sample=>originals.has(sample.id) && originals.get(sample.id).label !== sample.label);
+  if (!added && !removed && !changed.length) return "No data changes: the samples match the default snapshot.";
+  const labels=changed.length === 1 ? `${changed[0].id}: ${originals.get(changed[0].id).label} → ${changed[0].label}` : `${changed.length} labels changed`;
+  return `${labels}; ${added} samples added; ${removed} samples removed. Existing coordinates stay unchanged.`;
+}
+
+function comparisonMap(data,result,background,side) {
+  const x=value=>34+(value-1)/99*310, y=value=>16+(100-value)/99*180;
+  const lines=result.neighbors.map(sample=>`<line data-neighbor="${sample.id}" x1="${x(current.width)}" y1="${y(current.height)}" x2="${x(sample.width)}" y2="${y(sample.height)}" stroke="#963267"/>`).join("");
+  const points=data.map(sample=>sample.label === "Horizontal"
+    ? `<circle cx="${x(sample.width)}" cy="${y(sample.height)}" r="3" fill="#bac5ff" stroke="#465ccc"/>`
+    : `<rect x="${x(sample.width)-3}" y="${y(sample.height)-3}" width="6" height="6" fill="#db9bbe" stroke="#a23c7a"/>`).join("");
+  const px=x(current.width),py=y(current.height);
+  return `<svg class="compare-map" viewBox="0 0 370 235" role="img" aria-label="${side} model regions; input ${current.width} by ${current.height}; k ${k}; ${result.prediction ?? 'Please add samples first'}">
+    <g class="compare-regions">${background}</g><path d="M34 16 V196 H344" fill="none" stroke="#9d86a7"/>
+    <g class="compare-links">${lines}</g>${points}<path d="M${px} ${py-5} l5 5 -5 5 -5 -5 Z" fill="#e48ab3" stroke="#742346"/>
+    <g font-size="11" fill="#644665"><text x="34" y="211">1</text><text x="329" y="211">100</text><text x="7" y="20">100</text><text x="19" y="197">1</text><text x="170" y="228">Width →</text><text transform="translate(12 135) rotate(-90)">Height →</text></g></svg>`;
+}
+
+function comparisonCard(side,data,result,background) {
+  const name=side === "before" ? "Before · Default snapshot" : "After · Current samples";
+  const notes=[];
+  if (data.length < k && data.length) notes.push(`Fewer than k = ${k}: all available samples vote.`);
+  if (result.neighbors.length > k) notes.push(`A cutoff distance tie includes ${result.neighbors.length} voters instead of ${k}.`);
+  if (result.prediction === "Tie") notes.push("Equal votes: Tie.");
+  const voters=result.neighbors.map(sample=>`<li data-voter="${sample.id}">${sample.id} · ${sample.width} × ${sample.height} · ${sample.label} · distance ${Math.sqrt(sample.distanceSquared).toFixed(2)}</li>`).join("");
+  return `<article class="comparison-card" id="compare-${side}"><h3>${name}</h3>
+    <p class="compare-input">Input ${current.width} × ${current.height} · k = ${k} · ${data.length} samples</p>
+    <strong class="compare-prediction">${result.prediction ?? "Please add samples first"}</strong>
+    <p class="compare-votes">Horizontal: ${result.votes.Horizontal} votes · Vertical: ${result.votes.Vertical} votes</p>
+    ${comparisonMap(data,result,background,side)}<h4>Voting neighbors (${result.neighbors.length})</h4>
+    ${voters ? `<ul class="compare-voters" tabindex="0" aria-label="${name} voting neighbors">${voters}</ul>` : '<p>No samples to vote. Add a sample or restore defaults.</p>'}
+    <p class="note">${notes.join(" ")}</p></article>`;
+}
+
+function renderComparison(after,initialBefore) {
+  if (!experiment) return;
+  const before=initialBefore ?? classify(current.width,current.height,experiment.before,k);
+  const preset=EXPERIMENTS[experiment.type];
+  // Regions depend on data and k, not on the current input. Reuse them while dragging.
+  const key=JSON.stringify([k,samples]);
+  if (experiment.mapCache?.key !== key) {
+    const area={left:34,top:16,width:310,height:180};
+    experiment.mapCache={key,before:regionMarkup(experiment.before,area),after:regionMarkup(samples,area)};
+  }
+  $("experiment-comparison").hidden=false;
+  $("experiment-title").textContent=preset.title;
+  $("experiment-guide").textContent=preset.guide;
+  $("experiment-context").textContent=dataChanges(experiment.before,samples);
+  $("comparison-cards").innerHTML=comparisonCard("before",experiment.before,before,experiment.mapCache.before)+comparisonCard("after",samples,after,experiment.mapCache.after);
+  const sameVoters=before.neighbors.map(s=>s.id).join() === after.neighbors.map(s=>s.id).join();
+  $("comparison-reason").textContent=!samples.length
+    ? "After has no samples, so it cannot predict; Before still uses the saved default samples."
+    : `${sameVoters ? "The same neighbors vote" : "The current data selects different voting neighbors"}; ${before.prediction === after.prediction ? "their votes keep the same prediction" : "the current samples change the vote result"}.`;
+  document.querySelectorAll("[data-experiment]").forEach(button=>button.setAttribute("aria-pressed",button.dataset.experiment === experiment.type));
+}
+
+function renderCurrent(initialBefore) {
   for (const axis of ["width","height"]) $(axis).style.setProperty("--fill", `${(current[axis]-1)/99*100}%`);
   document.querySelectorAll("[data-try]").forEach(button => {
     button.setAttribute("aria-pressed", button.dataset.try === `${current.width},${current.height}`);
@@ -214,8 +341,9 @@ function renderCurrent() {
   $("add-dimensions").textContent=`Width ${current.width} × height ${current.height}`;
   const result=classify(current.width,current.height);
   renderPrediction(result); renderNeighbors(result); drawPoints(result);
+  renderComparison(result,initialBefore);
 }
-function refreshModel() { drawRegions(); renderCurrent(); }
+function refreshModel(initialBefore) { drawRegions(); renderCurrent(initialBefore); }
 function syncNumberFields() {
   ["width","height"].forEach(axis => {
     $(`${axis}-number`).value=current[axis]; $(`${axis}-number`).removeAttribute("aria-invalid");
@@ -251,6 +379,7 @@ $("reset-input").addEventListener("click",() => {
   current={width:60,height:30}; syncNumberFields(); renderCurrent();
 });
 $("restore-defaults").addEventListener("click",() => {
+  clearExperiment();
   samples=copyDefaults(); nextId=25; renderSamples(); refreshModel();
   $("data-message").textContent="Restored all 24 default samples. Input and mode are unchanged.";
 });
@@ -288,6 +417,12 @@ $("add-form").addEventListener("submit",event => {
   $("data-message").textContent=`Added ${sample.id}: ${sample.width} × ${sample.height}, ${sample.label}.`;
 });
 // Quick tries change only the input; experiments keep the user's data and k.
+document.querySelectorAll("[data-experiment]").forEach(button=>button.addEventListener("click",()=>startExperiment(button.dataset.experiment)));
+$("exit-experiment").addEventListener("click",()=>{
+  clearExperiment();
+  $("data-message").textContent="Comparison closed. Samples, input, and k are unchanged.";
+  document.querySelector('[data-experiment="normal"]').focus({preventScroll:true});
+});
 document.querySelectorAll("[data-try]").forEach(button => button.addEventListener("click", () => {
   const [width, height] = button.dataset.try.split(",").map(Number);
   current = {width, height};

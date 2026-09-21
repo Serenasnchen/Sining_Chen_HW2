@@ -39,3 +39,11 @@
 Other browsers, screen readers, real touch devices, and the student's subjective usability and color preference. Automated checks and assistant screenshot review are not student feedback.
 
 final result: passed
+
+## Version 2.3 incremental experiment check
+
+The pink design was retained. The existing experiment area now contains three labeled start buttons and a clear replacement notice. Before / After cards show the same current input and k, prediction, votes, all voters and distances, and paired numeric-region maps. Desktop uses two cards side by side; narrow screens stack them. No modal, new route, animation, or external asset was added.
+
+Inspected actual offline Edge screenshots `experiments-desktop.png` and `experiments-mobile.png` in the existing temporary QA folder. The odd-label case visibly changes H09's region and prediction. Text, circle/square/diamond symbols, lines, and numeric evidence supplement color. Checked widths 1440, 1024, 820, 620, 390, and 320 without page overflow. New keyboard controls and exit focus passed. Existing visual target still governs the surrounding layout; this is an incremental feature addition, not a new visual redesign.
+
+Functional checks: nine starts from modified/empty/reversed data; 20,000 reversal cases; independent comparison vote, voter, distance and region-grid checks; live data/input/k synchronization; tied votes, cutoff ties, insufficient and empty samples; input reset; exit, restore and reload cleanup. Existing regression checks also passed. Manual screen-reader, real touch-device, other-browser and student-usability checks remain outstanding.

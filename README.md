@@ -4,7 +4,7 @@ Author: Sining Chen
 
 This project started with the One Pixel ML demo. The original `one-pixel.html` is preserved unchanged.
 
-## Shape Neighbor: version 2.2
+## Shape Neighbor: version 2.3
 
 `your-new-lab.html` is a self-contained classroom experiment in nearest-neighbor classification.
 It uses numeric width and height, both whole numbers from 1 to 100, and the labels **Horizontal** and **Vertical**.
@@ -32,6 +32,31 @@ The page includes all HTML, CSS, and JavaScript. It works directly from disk wit
 
 Live app: [Shape Neighbor](https://shape-neighbor.vercel.app). Source and version history: [GitHub repository](https://github.com/Serenasnchen/Sining_Chen_HW2). You can also open the local HTML directly.
 
+## Guided experiments and live comparison: version 2.3
+
+Use **Experiments** in the top navigation, or scroll to **What changes the answer?** Each experiment button replaces the current dataset, sets the input, and selects k = 1. This is stated beside the buttons; no modal or separate page is involved.
+
+| Experiment | Starting change | What to observe |
+| --- | --- | --- |
+| Normal labels | Original 24 samples; input 78 × 22 | This is not a training coordinate. The computed nearest voter is H09 (80 × 20), distance 2.83, predicting Horizontal. |
+| One odd label | Defaults with only H09 changed to Vertical; input 80 × 20 | k = 1 predicts Vertical. At the same input, k = 3 predicts Horizontal because the other two voters are Horizontal. More neighbors can offset an odd label, but k = 3 is not always more accurate. |
+| Reversed labels | Defaults with every label exchanged; input 78 × 22 | Coordinates stay fixed. At the same input and k, predictions swap between Horizontal and Vertical; Tie stays Tie. The model follows the labels rather than a geometric rule. |
+
+Results in this table are calculated expectations and verified test results, not student observations. On the page, predictions, voters, distances, and votes come from the existing `classify` function, never hardcoded experiment answers.
+
+**Before** uses an immutable copy of the default data saved when the experiment starts. **After** uses the current editable samples. Both sides recompute for the same current width, height, and k. The comparison shows each prediction, actual votes, all voting neighbors and distances, data changes, and two small model-region maps. The main map and nearest-distance table continue to show After. Backgrounds use the same 50 × 50 grid helper and classifier; exact input predictions do not use grid approximations.
+
+Manual label changes, additions, and deletions update After while Before stays fixed. Moving the input, switching k, Quick tries, and Reset input update both results without replacing either dataset. Equal-distance cutoff ties, tied votes, insufficient data, and empty data use the existing classifier rules.
+
+- **Exit comparison** clears the experiment state and guidance, preserving current samples, input, and k.
+- **Restore defaults** also exits comparison while keeping its existing input/k preservation behavior.
+- **Start another experiment** always begins from a fresh default set, regardless of earlier edits, additions, removals, or a previously empty dataset.
+- **Refresh** clears the experiment and restores the usual initial page state.
+
+Actual checks for this addition used offline `file://` headless Edge: all three experiments started from edited, empty, and reversed datasets (nine combinations); expected Normal/One odd label results; 20,000 default input/k combinations for the reversal property, including 13 tied-vote cases; independent Euclidean checks of comparison votes, voters, and distances; and all 2,500 cells in both comparison maps after representative changes. Checked input/k/label/add/delete synchronization, duplicate rejection, input-only reset, empty/insufficient data, k = 1 and k = 3 distance ties, exit/restore/reload cleanup, and keyboard activation. The existing 20,000-case classifier and browser regression suite also passed. No network requests or JavaScript errors occurred.
+
+Checked layout widths 1440, 1024, 820, 620, 390, and 320 pixels without overall overflow, and inspected desktop/mobile screenshots of the new section. Real touch devices, screen readers, other browsers, and your own classroom usability test remain manual checks.
+
 ## Soft pink Y2K interface: version 2.2
 
 The user selected the attached pink/chrome layout and asked to use the gentler pink from a second texture image. This replaces the earlier One Pixel-inspired appearance while keeping the same project and classifier.
@@ -56,6 +81,8 @@ These were automated headless Edge checks and visual inspection by the assistant
 | Reset input | Width 60, height 30 | Edited samples and current k |
 | Restore default samples | Original 24 samples and labels; removes added samples | Current input and k |
 | Refresh the page | Defaults, input 60 by 30, k = 1, guide off | No edits are saved between page loads |
+
+Restore default samples and refresh also clear guided comparison state. Reset input keeps an active comparison and recomputes both sides at 60 × 30.
 
 Invalid number-box entries (empty, fractional, or outside 1–100) show a message and leave the model at the last valid input. Leaving the invalid field restores that valid value. The preview caption and Add panel always show the dimensions actually being used.
 
@@ -187,3 +214,12 @@ Vercel is connected to the GitHub repository; a push can trigger a deployment. D
 - Reran the model/browser checks documented above. Compared full and focused screenshots with the selected target; tightened desktop spacing after the first comparison and checked the revised layout. Manual student testing is still pending.
 - The user's earlier authorization to commit, push to GitHub, and deploy checked versions to the existing Vercel project still applies. Only the classifier and routing configuration are included in the Vercel deployment allowlist.
 - No classmate feedback, personal reflection, or additional guidance records have been invented.
+
+### 2026-09-21 — Version 2.3: guided label experiments
+
+- Source of this change: the user's project-review request for one-click experiments and fair Before / After comparisons, borrowing the teaching approach of the course One Pixel demo. This is project review feedback, not classmate feedback.
+- Added Normal labels, One odd label, and Reversed labels buttons in the existing experiment section. Each starts reproducibly from the default 24 samples and sets input/k. Kept the pink interface, main map, nearest-distance table, manual data tools, and classifier.
+- Added an immutable default snapshot and live current-data comparison: shared current input/k, real votes and distances, data-change summary, and paired region maps. Restoring defaults or exiting clears comparison state; input-only reset preserves it.
+- Verified the nine dirty-state starts, expected H09/2.83 result, odd-label k comparison, all 20,000 reversal cases including Tie, independent map/vote checks, data editing, reset/cleanup behavior, offline operation, keyboard controls, and six responsive widths. Reran the existing classifier/browser regression suite and inspected new desktop/mobile screenshots.
+- Latest user instruction: create a meaningful commit and push directly to the existing GitHub repository. The connected Vercel project may deploy that push automatically; no separate deployment command is required for this request.
+- Original one-pixel.html was unchanged. No student observations, classmate feedback, personal reflection, or accuracy claims were invented.
