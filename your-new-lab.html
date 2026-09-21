@@ -1,184 +1,173 @@
-﻿<!doctype html>
+<!doctype html>
 <html lang="en">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Shape Neighbor — Sample Lab</title>
+<title>Shape Neighbor — Interactive ML Lab</title>
+<meta name="theme-color" content="#101114">
+<meta name="description" content="Change a rectangle, edit its examples, and explore how nearest neighbors make a prediction.">
 <style>
-  :root { color-scheme:light; --ink:#203143; --muted:#526476; --line:#ccd7df; --blue:#16628c; --orange:#ab4b12; }
-  * { box-sizing:border-box; }
-  body { margin:0; background:#f2f5f7; color:var(--ink); font:16px/1.5 system-ui,sans-serif; }
-  main { max-width:1320px; margin:auto; padding:28px 22px 48px; }
-  h1,h2,h3,p { margin-top:0; }
-  h1 { font-size:clamp(2rem,4vw,2.8rem); line-height:1.15; margin-bottom:10px; }
-  h2 { font-size:1.25rem; margin-bottom:12px; }
-  h3 { font-size:1rem; margin-bottom:8px; }
-  p { margin-bottom:12px; }
-  .eyebrow { color:var(--blue); font-weight:750; font-size:.8rem; letter-spacing:.09em; text-transform:uppercase; margin-bottom:6px; }
-  .muted,.note { color:var(--muted); } .note { font-size:.88rem; }
-  .panel { background:white; border:1px solid var(--line); border-radius:12px; padding:20px; min-width:0; }
-  .workspace { display:grid; grid-template-columns:minmax(280px,340px) minmax(0,1fr); gap:20px; margin:22px 0; align-items:start; }
+  :root { color-scheme:light; --ink:#101114; --paper:#f4f1e8; --acid:#dbff4a; --orange:#ff6b35; --blue:#4f74ff; --muted:#595952; --line:#c9c5b9; --shadow:6px 6px 0 var(--ink); }
+  * { box-sizing:border-box; } html { scroll-behavior:smooth; scroll-padding-top:18px; }
+  body { margin:0; background:var(--paper); color:var(--ink); font:16px/1.5 ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif; }
+  main { max-width:1280px; margin:auto; padding:26px 24px 38px; }
+  h1,h2,h3,p { margin-top:0; } p { margin-bottom:12px; }
+  h1 { font-size:clamp(2.6rem,4.8vw,4.5rem); line-height:.96; letter-spacing:-.065em; font-weight:900; margin-bottom:16px; }
+  h2 { font-size:clamp(1.6rem,2.7vw,2.3rem); line-height:1.05; letter-spacing:-.045em; margin-bottom:12px; }
+  h3 { font-size:1.05rem; letter-spacing:-.025em; margin-bottom:8px; }
+  .topbar { display:flex; justify-content:space-between; align-items:center; gap:16px; border-bottom:2px solid var(--ink); padding-bottom:18px; margin-bottom:24px; }
+  .brand { font-size:1.3rem; font-weight:900; letter-spacing:-.04em; }
+  .topbar nav { display:flex; gap:20px; font:750 .78rem ui-monospace,monospace; text-transform:uppercase; }
+  a { color:inherit; text-underline-offset:4px; } a:hover { text-decoration-thickness:2px; }
+  .eyebrow { font:750 .75rem ui-monospace,monospace; text-transform:uppercase; letter-spacing:.07em; margin-bottom:14px; }
+  .eyebrow span { display:inline-block; background:var(--acid); padding:4px 6px; border:1px solid var(--ink); margin-right:5px; }
+  .lede { color:#393a38; font-size:1rem; max-width:480px; }
+  .muted,.note { color:var(--muted); } .note { font-size:.83rem; line-height:1.45; }
+  .panel { background:white; border:2px solid var(--ink); box-shadow:var(--shadow); padding:22px; min-width:0; }
+  .workspace { display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1fr); gap:22px; margin:0 0 26px; align-items:start; }
+  .input-panel { position:sticky; top:18px; }
+  .step-row { display:flex; gap:8px; margin-bottom:20px; }
+  .step-row span { flex:1; height:8px; background:#ddd9cf; border:1px solid var(--ink); }
+  .step-row span:first-child { background:var(--orange); } .step-row span:nth-child(2) { background:var(--acid); }
   .section-head,.control-head { display:flex; justify-content:space-between; gap:12px; align-items:center; flex-wrap:wrap; }
-  label,legend { font-weight:650; } input,select,button { font:inherit; }
-  input[type="number"] { width:82px; padding:6px 8px; border:1px solid #7c8e9c; border-radius:5px; }
-  input[type="range"] { width:100%; min-height:32px; accent-color:var(--blue); margin:6px 0 0; }
-  input[type="checkbox"],input[type="radio"] { accent-color:var(--blue); width:17px; height:17px; }
-  .control { margin-bottom:16px; }
-  .range-label { display:block; color:var(--muted); font-size:.82rem; font-weight:400; }
-  select { background:white; border:1px solid #7c8e9c; border-radius:5px; padding:7px; color:var(--ink); }
-  button { border:1px solid #7c8e9c; border-radius:6px; background:white; color:var(--ink); padding:8px 12px; cursor:pointer; }
-  button:hover { background:#edf3f7; } button.primary { background:var(--blue); color:white; border-color:var(--blue); }
-  button.primary:hover { background:#104967; } button.delete { color:#92361e; font-size:.88rem; }
-  :focus-visible { outline:3px solid #946200; outline-offset:3px; }
-  figure { margin:18px 0; }
-  .stage { width:200px; height:200px; margin:0 auto 10px; display:grid; place-items:center; background:#edf2f6; outline:1px solid var(--line); }
-  #preview { background:#38566c; } figcaption { text-align:center; font-variant-numeric:tabular-nums; }
-  .result { padding:16px; background:#f0f5f9; border-left:4px solid var(--blue); border-radius:4px; }
-  #prediction { font-size:1.55rem; display:block; margin-bottom:8px; }
-  .result p:last-child { margin-bottom:0; } #input-message { min-height:1.5em; color:#92361e; }
-  fieldset { border:1px solid var(--line); padding:10px 14px; border-radius:6px; margin:0 0 12px; }
-  .modes { display:flex; gap:20px; flex-wrap:wrap; }
-  .modes label,.toggle { display:inline-flex; align-items:center; gap:7px; }
-  .legend { display:flex; gap:8px 18px; flex-wrap:wrap; font-size:.88rem; margin:10px 0; }
+  label,legend { font-weight:750; } input,select,button { font:inherit; }
+  input[type=number] { width:78px; padding:4px 6px; border:2px solid var(--ink); border-radius:0; font:800 1.5rem ui-monospace,monospace; background:white; }
+  input[type=range] { width:100%; min-height:30px; accent-color:var(--orange); margin:5px 0 0; }
+  input[type=checkbox],input[type=radio] { accent-color:var(--ink); width:16px; height:16px; flex-shrink:0; }
+  .control { margin-bottom:12px; } .range-label { display:block; color:var(--muted); font:400 .72rem ui-monospace,monospace; margin-top:6px; }
+  select { background:white; border:1px solid var(--ink); border-radius:0; padding:7px; color:var(--ink); max-width:100%; }
+  button { border:2px solid var(--ink); border-radius:0; background:white; color:var(--ink); padding:10px 14px; font-weight:750; box-shadow:3px 3px 0 var(--ink); cursor:pointer; }
+  button:hover { background:var(--acid); } button:active { transform:translate(2px,2px); box-shadow:1px 1px 0 var(--ink); }
+  button.primary { background:var(--orange); } button.primary:hover { background:var(--acid); }
+  button.delete { font-size:.8rem; padding:6px 10px; box-shadow:2px 2px 0 var(--ink); }
+  :focus-visible { outline:3px solid #2f4fda; outline-offset:4px; }
+  .shape-controls { display:grid; grid-template-columns:200px minmax(0,1fr); gap:24px; align-items:center; margin:22px 0 16px; }
+  figure { margin:0; min-width:0; }
+  .stage { width:200px; height:200px; margin:0 auto 13px; display:grid; place-items:center; background:var(--paper); outline:2px solid var(--ink); box-shadow:6px 6px 0 var(--ink); }
+  #preview { background:var(--ink); } figcaption { font:750 .74rem ui-monospace,monospace; text-align:center; }
+  .figure-note { text-align:center; margin:7px 0 0; font-size:.72rem; }
+  #input-message:empty { display:none; } #input-message { color:#92331b; margin-top:12px; }
+  .reset-row { display:flex; align-items:center; gap:14px; margin:10px 0 18px; }
+  .reset-row button { flex-shrink:0; font-size:.8rem; padding:8px 12px; } .reset-row p { margin:0; }
+  .result { background:var(--ink); color:white; padding:17px 18px; border:2px solid var(--ink); }
+  .result .eyebrow { color:var(--acid); margin:0 0 7px; }
+  #prediction { font-size:clamp(1.8rem,3vw,2.6rem); font-weight:900; letter-spacing:-.04em; line-height:1.1; display:block; margin-bottom:10px; overflow-wrap:anywhere; }
+  #vote-summary { font:600 .79rem/1.5 ui-monospace,monospace; color:var(--acid); margin-bottom:9px; }
+  #explanation { color:#e0dfd9; font-size:.88rem; line-height:1.45; margin:0; }
+  .quick-tries { margin-top:22px; } .quick-tries .eyebrow { margin-bottom:10px; }
+  .preset-list { display:grid; gap:8px; }
+  .preset { display:grid; grid-template-columns:28px 1fr auto; gap:9px; align-items:center; text-align:left; padding:9px 10px; border-width:1px; box-shadow:2px 2px 0 var(--ink); }
+  .preset-num { background:var(--ink); color:white; font:750 .72rem ui-monospace,monospace; padding:4px; text-align:center; }
+  .preset b { display:block; font-size:.86rem; } .preset small { display:block; font-size:.75rem; font-weight:400; color:#55534d; }
+  .preset-dim { font:700 .78rem ui-monospace,monospace; }
+  .preset[aria-pressed=true] { background:var(--acid); outline:2px solid var(--ink); outline-offset:1px; }
+  .quick-tries .note { margin:12px 0 0; }
+  fieldset { border:0; padding:0; margin:0 0 12px; }
+  legend { font:750 .72rem ui-monospace,monospace; text-transform:uppercase; margin-bottom:7px; }
+  .modes { display:grid; grid-template-columns:1fr 1fr; gap:9px; }
+  .modes label { display:flex; align-items:center; gap:6px; padding:9px; border:2px solid var(--ink); font-size:.8rem; cursor:pointer; }
+  .modes label:has(input:checked) { background:var(--acid); box-shadow:2px 2px 0 var(--ink); }
+  .toggle { display:flex; align-items:center; gap:7px; font-size:.76rem; font-weight:600; }
+  .legend { display:flex; gap:6px 14px; flex-wrap:wrap; font-size:.73rem; margin:12px 0; }
   .legend span { display:inline-flex; gap:6px; align-items:center; }
-  .symbol-h { width:12px; height:12px; background:var(--blue); border-radius:50%; display:inline-block; }
-  .symbol-v { width:12px; height:12px; background:var(--orange); display:inline-block; }
-  .symbol-input { width:12px; height:12px; border:2px solid #142231; background:white; transform:rotate(45deg); display:inline-block; }
-  .swatch { width:17px; height:13px; border:1px solid #778895; display:inline-block; }
-  .swatch.h { background:#e1eff8; } .swatch.v { background:#ffecd9; } .swatch.tie { background:#e6e3ef; }
-  .map-wrap { max-width:680px; margin:auto; } #decision-map { display:block; width:100%; height:auto; }
-  .map-axis { font:14px system-ui,sans-serif; fill:#334a5c; }
-  .table-scroll { overflow:auto; border:1px solid var(--line); border-radius:6px; }
-  .neighbors-scroll { max-height:285px; }
-  table { border-collapse:collapse; width:100%; font-size:.9rem; font-variant-numeric:tabular-nums; }
-  th,td { text-align:left; padding:9px 10px; border-bottom:1px solid #e1e7ec; white-space:nowrap; }
-  th { background:#f0f4f7; position:sticky; top:0; z-index:1; }
-  tr:last-child td { border-bottom:0; } tr.participates { background:#eff5fa; }
-  caption { text-align:left; padding:9px 10px; color:var(--muted); }
-  .data-layout { display:grid; grid-template-columns:260px minmax(0,1fr); gap:20px; margin-top:16px; }
-  .data-scroll { max-height:510px; } .sample-shape { width:46px; height:46px; display:grid; place-items:center; }
-  .sample-shape span { display:block; background:#38566c; }
-  .add-form { background:#f3f6f8; border-radius:8px; padding:16px; }
+  .symbol-h { width:10px; height:10px; background:var(--blue); border:1px solid var(--ink); border-radius:50%; display:inline-block; }
+  .symbol-v { width:10px; height:10px; background:var(--orange); border:1px solid var(--ink); display:inline-block; }
+  .symbol-input { width:10px; height:10px; border:2px solid var(--ink); background:var(--acid); transform:rotate(45deg); display:inline-block; }
+  .swatch { width:15px; height:11px; border:1px solid #77766f; display:inline-block; }
+  .swatch.h { background:#e9edff; } .swatch.v { background:#ffeadf; } .swatch.tie { background:#eeebf3; }
+  .map-wrap { max-width:470px; margin:auto; } #decision-map { display:block; width:100%; height:auto; }
+  #map-background { shape-rendering:crispEdges; } .map-axis { font:14px ui-monospace,monospace; fill:#393a38; }
+  .region-legend { margin:5px 0 12px; }
+  .map-help { border:1px solid var(--line); background:var(--paper); padding:10px 12px; margin:12px 0 18px; }
+  .map-help summary { font-size:.8rem; } .map-help p { font-size:.81rem; margin:8px 0 0; }
+  .neighbors-head { display:flex; justify-content:space-between; gap:12px; align-items:baseline; border-top:2px solid var(--ink); padding-top:15px; margin-top:16px; }
+  .neighbors-head h3 { font-size:1.18rem; } .neighbors-head span { font:500 .7rem ui-monospace,monospace; color:var(--muted); }
+  #neighbors-note { font-size:.76rem; margin-bottom:9px; }
+  .table-scroll { overflow:auto; border:1px solid var(--ink); }
+  .neighbors-scroll { max-height:250px; }
+  table { border-collapse:collapse; width:100%; font-size:.8rem; font-variant-numeric:tabular-nums; }
+  th,td { text-align:left; padding:8px; border-bottom:1px solid #d7d4c9; white-space:nowrap; }
+  th { background:var(--paper); font:750 .7rem ui-monospace,monospace; position:sticky; top:0; z-index:1; }
+  tr:last-child td { border-bottom:0; } tr.participates { background:#f3f8d9; } tr.participates td:last-child { font-weight:850; }
+  caption { text-align:left; padding:10px; color:var(--muted); font:500 .74rem ui-monospace,monospace; }
+  .data-panel { margin-bottom:26px; scroll-margin-top:18px; }
+  #sample-count { font:650 .8rem ui-monospace,monospace; margin-bottom:0; }
+  .section-head { border-bottom:2px solid var(--ink); padding-bottom:16px; margin-bottom:14px; }
+  .section-head h2 { margin-bottom:8px; } .section-head .eyebrow { margin-bottom:10px; }
+  .data-layout { display:grid; grid-template-columns:260px minmax(0,1fr); gap:22px; margin-top:16px; }
+  .data-scroll { max-height:430px; } .sample-shape { width:46px; height:46px; display:grid; place-items:center; }
+  .sample-shape span { display:block; background:var(--ink); }
+  .add-form { background:var(--paper); border:1px solid var(--ink); padding:16px; }
+  .add-form h3 { font-size:1.2rem; line-height:1.15; } #add-dimensions { font:750 .85rem ui-monospace,monospace; padding:12px 0; border-bottom:1px solid var(--line); }
   .add-form label,.add-form select,.add-form button { display:block; width:100%; margin-bottom:10px; }
-  #data-message { margin-top:12px; min-height:3em; font-weight:600; }
-  .experiment-grid { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:20px; }
-  .experiments { margin-top:22px; } details { margin-top:18px; border-top:1px solid var(--line); padding-top:14px; }
-  summary { cursor:pointer; font-weight:650; } details p { margin-top:12px; } code { overflow-wrap:anywhere; }
-  @media(max-width:820px) {
-    .workspace { grid-template-columns:1fr; } .input-layout { display:grid; grid-template-columns:1fr 1fr; gap:24px; }
-    .result { grid-column:1/-1; } .data-layout { grid-template-columns:1fr; } .experiment-grid { grid-template-columns:1fr; gap:8px; }
-  }
-  @media(max-width:480px) {
-    main { padding:18px 12px 30px; } .panel { padding:14px; } .input-layout { grid-template-columns:1fr; gap:0; }
-    th,td { padding:8px; } .toggle { align-items:start; font-size:.88rem; }
-  }
+  .add-form label { font-size:.83rem; } .add-form .note { margin:14px 0 0; }
+  #data-message:empty { display:none; } #data-message { margin:14px 0; font-size:.86rem; padding:10px; border-left:4px solid var(--ink); background:var(--acid); }
+  .thumbnail-note { margin-top:16px; }
+  .experiment-grid { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:18px; }
+  .experiment-grid>div { border-left:3px solid var(--orange); padding-left:14px; }
+  .experiment-grid p { font-size:.88rem; margin-bottom:0; }
+  details { margin-top:18px; border-top:1px solid var(--line); padding-top:14px; }
+  summary { cursor:pointer; font-weight:750; } details p { margin-top:12px; } code { overflow-wrap:anywhere; }
+  .credit { margin-top:28px; padding-top:15px; border-top:2px solid var(--ink); display:flex; gap:12px; justify-content:space-between; flex-wrap:wrap; font:400 .72rem/1.6 ui-monospace,monospace; color:var(--muted); }
+  .credit a { color:var(--ink); font-weight:700; }
+  @media(max-width:1100px) { .shape-controls { grid-template-columns:1fr; gap:22px; } .input-controls { display:grid; grid-template-columns:1fr 1fr; gap:16px; } .input-panel { position:static; } h1 { font-size:3.4rem; } }
+  @media(max-width:820px) { .workspace { grid-template-columns:1fr; } .shape-controls { grid-template-columns:200px minmax(0,1fr); } .input-controls { display:block; } .data-layout { grid-template-columns:1fr; } .experiment-grid { grid-template-columns:1fr; gap:16px; } .map-wrap { max-width:530px; } }
+  @media(max-width:560px) { main { padding:18px 14px 30px; } .topbar { align-items:start; margin-bottom:18px; } .brand { font-size:1rem; } .topbar nav { font-size:.65rem; gap:10px; } .panel { padding:16px; box-shadow:4px 4px 0 var(--ink); } h1 { font-size:2.8rem; } .shape-controls { grid-template-columns:1fr; } .input-controls { display:grid; grid-template-columns:1fr 1fr; gap:14px; } .control-head { gap:5px; } input[type=number] { width:70px; font-size:1.3rem; } .modes label { font-size:.72rem; padding:7px 5px; gap:3px; } .reset-row { align-items:start; } .preset { grid-template-columns:26px 1fr; } .preset-dim { grid-column:2; } .neighbors-head span { display:none; } th,td { padding:7px; } .section-head>button { width:100%; } .toggle { align-items:start; } }
+  @media(prefers-reduced-motion:reduce) { html { scroll-behavior:auto; } }
 </style>
 </head>
 <body>
 <main>
-  <header>
-    <p class="eyebrow">CPSC 1710 · Sample Lab · Version 2</p>
-    <h1>Shape Neighbor</h1>
-    <p>Classify a rectangle by comparing its width and height with labeled examples.</p>
-    <p class="muted">Change the input, inspect its neighbors, then edit the data and watch the prediction regions change.</p>
-  </header>
-  <div class="workspace">
-    <section class="panel" aria-labelledby="input-heading">
-      <h2 id="input-heading">1. Try a rectangle</h2>
-      <div class="input-layout">
-        <div>
-          <div class="control">
-            <div class="control-head"><label for="width-number">Width</label><input id="width-number" type="number" min="1" max="100" step="1" value="60" aria-describedby="input-help input-message"></div>
-            <label class="range-label" for="width">Width slider · 1–100</label><input id="width" type="range" min="1" max="100" step="1" value="60">
-          </div>
-          <div class="control">
-            <div class="control-head"><label for="height-number">Height</label><input id="height-number" type="number" min="1" max="100" step="1" value="30" aria-describedby="input-help input-message"></div>
-            <label class="range-label" for="height">Height slider · 1–100</label><input id="height" type="range" min="1" max="100" step="1" value="30">
-          </div>
-          <p id="input-help" class="note">Use whole numbers from 1 to 100. Valid entries update immediately.</p>
-          <p id="input-message" class="note" role="status"></p>
-          <button id="reset-input" type="button">Reset input</button>
-          <p class="note">Returns to 60 × 30. Your samples and mode stay unchanged.</p>
+  <header class="topbar"><div class="brand">SHAPE NEIGHBOR / ML</div><nav aria-label="Page sections"><a href="#lab">Lab</a><a href="#data">Samples</a><a href="#experiments">Experiments</a></nav></header>
+  <div class="workspace" id="lab">
+    <section class="panel input-panel" aria-labelledby="input-heading">
+      <div class="step-row" aria-hidden="true"><span></span><span></span><span></span></div>
+      <p class="eyebrow"><span>01 / Try</span> A tiny classifier</p>
+      <h1 id="input-heading">Learn from<br>neighbors.</h1>
+      <p class="lede">Two numbers describe your rectangle. Labeled examples give it a name. Change the shape and follow the evidence.</p>
+      <div class="shape-controls">
+        <figure><div class="stage" aria-hidden="true"><div id="preview"></div></div><figcaption id="preview-caption"></figcaption><p class="note figure-note">Fixed scale · 1 unit = 2 pixels</p></figure>
+        <div class="input-controls">
+          <div class="control"><div class="control-head"><label for="width-number">Width</label><input id="width-number" type="number" min="1" max="100" step="1" value="60" aria-describedby="input-help input-message"></div><label class="range-label" for="width">Width slider · 1–100</label><input id="width" type="range" min="1" max="100" step="1" value="60"></div>
+          <div class="control"><div class="control-head"><label for="height-number">Height</label><input id="height-number" type="number" min="1" max="100" step="1" value="30" aria-describedby="input-help input-message"></div><label class="range-label" for="height">Height slider · 1–100</label><input id="height" type="range" min="1" max="100" step="1" value="30"></div>
         </div>
-        <figure>
-          <div class="stage" aria-hidden="true"><div id="preview"></div></div>
-          <figcaption id="preview-caption"></figcaption><p class="note">Fixed scale: 1 unit = 2 pixels.</p>
-        </figure>
-        <div class="result" role="status" aria-live="polite" aria-atomic="true">
-          <span class="note">Prediction</span><strong id="prediction"></strong>
-          <p id="vote-summary"></p><p id="explanation"></p>
-        </div>
+      </div>
+      <p id="input-help" class="note">Type a whole number or drag a slider. The model updates immediately.</p><p id="input-message" class="note" role="status"></p>
+      <div class="reset-row"><button id="reset-input" type="button">Reset input</button><p class="note">Back to 60 × 30.<br>Your samples and k stay unchanged.</p></div>
+      <div class="result" role="status" aria-live="polite" aria-atomic="true"><p class="eyebrow">The model says</p><strong id="prediction"></strong><p id="vote-summary"></p><p id="explanation"></p></div>
+      <div class="quick-tries"><p class="eyebrow"><span>Quick tries</span> Three starting points</p>
+        <div class="preset-list">
+          <button class="preset" type="button" data-try="80,20" aria-pressed="false"><span class="preset-num">01</span><span><b>An easy match</b><small>Start right on an example.</small></span><span class="preset-dim">80 × 20</span></button>
+          <button class="preset" type="button" data-try="50,50" aria-pressed="false"><span class="preset-num">02</span><span><b>Near the boundary</b><small>Try k = 1, then k = 3.</small></span><span class="preset-dim">50 × 50</span></button>
+          <button class="preset" type="button" data-try="1,100" aria-pressed="false"><span class="preset-num">03</span><span><b>A shape at the edge</b><small>How far are its neighbors?</small></span><span class="preset-dim">1 × 100</span></button>
+        </div><p class="note">These buttons change only the input. They use your current samples and k.</p>
       </div>
     </section>
     <section class="panel" aria-labelledby="observe-heading">
-      <h2 id="observe-heading">2. See how it decides</h2>
-      <fieldset><legend>Neighbors to use</legend><div class="modes">
-        <label><input type="radio" name="mode" value="1" checked> k = 1 · Nearest</label>
-        <label><input type="radio" name="mode" value="3"> k = 3 · Majority vote</label>
-      </div></fieldset>
-      <p class="note">k = 1 uses the closest sample. k = 3 lets the three closest samples vote. Equal distances at the cutoff include every tied sample, so more neighbors may vote.</p>
-      <div class="legend" aria-label="Point legend">
-        <span><i class="symbol-h" aria-hidden="true"></i> Horizontal: circle</span>
-        <span><i class="symbol-v" aria-hidden="true"></i> Vertical: square</span>
-        <span><i class="symbol-input" aria-hidden="true"></i> Current input: diamond</span>
-      </div>
-      <div class="map-wrap">
-        <svg id="decision-map" viewBox="0 0 580 555" role="img" aria-labelledby="map-title map-desc">
-          <title id="map-title">Width and height classification map</title><desc id="map-desc"></desc>
-          <g id="map-background" aria-hidden="true"></g><g id="map-axes" aria-hidden="true"></g>
-          <g id="map-reference" aria-hidden="true"></g><g id="map-links" aria-hidden="true"></g>
-          <g id="map-points" aria-hidden="true"></g><g id="map-input" aria-hidden="true"></g>
-        </svg>
-      </div>
-      <div class="legend" aria-label="Prediction region legend">
-        <span><i class="swatch h" aria-hidden="true"></i> Horizontal region</span>
-        <span><i class="swatch v" aria-hidden="true"></i> Vertical region</span>
-        <span><i class="swatch tie" aria-hidden="true"></i> Tie region</span>
-      </div>
-      <p class="note">The pale background shows model predictions on an approximate grid. The input prediction uses exact distances. Lines connect the input to every voting neighbor; outlined points are voters. Hover over a point for its ID; the tables give the same details.</p>
-      <label class="toggle"><input id="geometry-line" type="checkbox"> Show width = height (geometric guide, not the model boundary)</label>
-      <h3 style="margin-top:20px">Nearest samples</h3><p id="neighbors-note" class="note"></p>
-      <p class="note">On a narrow screen, scroll the table sideways to see every column.</p>
-      <div class="table-scroll neighbors-scroll" tabindex="0" aria-label="Nearest samples table; scroll to see all voters">
-        <table><thead><tr><th scope="col">ID</th><th scope="col">Width × Height</th><th scope="col">Label</th><th scope="col">Distance</th><th scope="col">Votes?</th></tr></thead><tbody id="neighbors-body"></tbody></table>
-      </div>
-      <p class="note">Distances are displayed to 2 decimals. Equal displayed values may hide different exact distances. Distance and vote counts are not confidence probabilities.</p>
+      <p class="eyebrow"><span>02 / Observe</span> Follow the neighbors</p><h2 id="observe-heading">Find the pattern.</h2>
+      <fieldset><legend>Choose the neighborhood</legend><div class="modes"><label><input type="radio" name="mode" value="1" checked> k = 1 · Nearest</label><label><input type="radio" name="mode" value="3"> k = 3 · Vote</label></div></fieldset>
+      <div class="legend" aria-label="Point legend"><span><i class="symbol-h" aria-hidden="true"></i> Horizontal · circle</span><span><i class="symbol-v" aria-hidden="true"></i> Vertical · square</span><span><i class="symbol-input" aria-hidden="true"></i> Your input</span></div>
+      <div class="map-wrap"><svg id="decision-map" viewBox="0 0 580 555" role="img" aria-labelledby="map-title map-desc"><title id="map-title">Width and height classification map</title><desc id="map-desc"></desc><g id="map-background" aria-hidden="true"></g><g id="map-axes" aria-hidden="true"></g><g id="map-reference" aria-hidden="true"></g><g id="map-links" aria-hidden="true"></g><g id="map-points" aria-hidden="true"></g><g id="map-input" aria-hidden="true"></g></svg></div>
+      <div class="legend region-legend" aria-label="Prediction region legend"><span><i class="swatch h" aria-hidden="true"></i> Horizontal region</span><span><i class="swatch v" aria-hidden="true"></i> Vertical region</span><span><i class="swatch tie" aria-hidden="true"></i> Tie region</span></div>
+      <label class="toggle"><input id="geometry-line" type="checkbox"> Show width = height · geometric guide, not the model boundary</label>
+      <details class="map-help"><summary>How to read this map</summary><p>k = 1 uses the closest sample. k = 3 lets the three closest samples vote. A distance tie at the cutoff includes every tied sample, so more neighbors may vote.</p><p>Lines connect your input to every voting neighbor. Outlined points are voters; hover for sample IDs. The pale background approximates model predictions on a grid. Your input always uses exact distances.</p></details>
+      <div class="neighbors-head"><h3>The nearest examples</h3><span>Smaller distance = closer</span></div><p id="neighbors-note" class="note"></p>
+      <div class="table-scroll neighbors-scroll" tabindex="0" aria-label="Nearest samples table; scroll to see all voters"><table><thead><tr><th scope="col">ID</th><th scope="col">Width × Height</th><th scope="col">Label</th><th scope="col">Distance</th><th scope="col">Votes?</th></tr></thead><tbody id="neighbors-body"></tbody></table></div>
+      <p class="note" style="margin:10px 0 0">Distances are rounded here, not in the model. Votes and distances are not confidence probabilities. Scroll tables sideways on small screens.</p>
     </section>
   </div>
-  <section class="panel" aria-labelledby="data-heading">
-    <div class="section-head"><div><h2 id="data-heading">3. Change the training samples</h2><p id="sample-count" class="muted"></p></div><button id="restore-defaults" type="button">Restore default samples</button></div>
-    <p class="note">Start with 24 fixed examples: 12 Horizontal and 12 Vertical. Edit any label or delete a row. Changes last until you refresh or restore defaults; restoring samples keeps your current input and mode. Scroll the table for more rows or columns.</p>
-    <div class="data-layout">
-      <div>
-        <form id="add-form" class="add-form">
-          <h3>Add your current rectangle</h3><p id="add-dimensions"></p>
-          <label for="add-label">Label for the new sample</label>
-          <select id="add-label"><option value="Horizontal">Horizontal</option><option value="Vertical">Vertical</option></select>
-          <button class="primary" type="submit">Add sample</button>
-          <p class="note">Choose a label yourself. If these dimensions already exist, edit that sample instead.</p>
-        </form>
-        <p id="data-message" role="status" aria-live="polite"></p>
-        <p class="note">Table previews use one fixed scale: 1 unit = 0.45 pixels. Labels do not change the shapes.</p>
-      </div>
-      <div class="table-scroll data-scroll" tabindex="0" aria-label="Editable training samples; scroll for more rows">
-        <table><caption>Training data · labels are editable</caption><thead><tr><th scope="col">ID</th><th scope="col">Shape</th><th scope="col">Width × Height</th><th scope="col">Label</th><th scope="col">Action</th></tr></thead><tbody id="samples-body"></tbody></table>
-      </div>
+  <section class="panel data-panel" id="data" aria-labelledby="data-heading">
+    <div class="section-head"><div><p class="eyebrow"><span>03 / Edit</span> You provide the meaning</p><h2 id="data-heading">Change the examples.<br>Change the prediction.</h2><p id="sample-count" class="muted"></p></div><button id="restore-defaults" type="button">Restore default samples</button></div>
+    <p class="note">Edit any label, add your rectangle, or delete an example. Changes last until refresh or restore. Restoring samples keeps your input and k.</p>
+    <div class="data-layout"><div><form id="add-form" class="add-form"><h3>Give this shape a label.</h3><p id="add-dimensions"></p><label for="add-label">New sample label</label><select id="add-label"><option value="Horizontal">Horizontal</option><option value="Vertical">Vertical</option></select><button class="primary" type="submit">Add sample</button><p class="note">Already in the data? Edit the existing label instead. Duplicate dimensions are not added.</p></form><p id="data-message" role="status" aria-live="polite"></p><p class="note thumbnail-note">24 fixed defaults: 12 of each label.<br>Table shapes use 0.45 pixels per unit.<br>Scroll the table for more rows or columns.</p></div>
+      <div class="table-scroll data-scroll" tabindex="0" aria-label="Editable training samples; scroll for more rows"><table><caption>Training data · your labels, the model's evidence</caption><thead><tr><th scope="col">ID</th><th scope="col">Shape</th><th scope="col">Width × Height</th><th scope="col">Label</th><th scope="col">Action</th></tr></thead><tbody id="samples-body"></tbody></table></div>
     </div>
   </section>
-  <section class="panel experiments" aria-labelledby="experiments-heading">
-    <h2 id="experiments-heading">4. Run a small experiment</h2>
-    <div class="experiment-grid">
-      <div><h3>Change one label</h3><p>Try 80 × 20 with k = 1. Change H09 to Vertical. What changes in the prediction and map?</p></div>
-      <div><h3>Add your own example</h3><p>Try 50 × 50. Choose a label and add it. How does the nearby region change? Delete it and compare.</p></div>
-      <div><h3>Compare two settings</h3><p>Restore defaults and try 50 × 50. Switch between k = 1 and k = 3. Follow the lines and count the votes.</p></div>
-    </div>
-    <details><summary>What is this model doing?</summary>
-      <p>This classroom model uses numeric features (width and height) and labeled samples. It is not image recognition and needs no neural-network training.</p>
-      <p><code>distance = √((width − sample width)² + (height − sample height)²)</code></p>
-      <p>Sort samples by distance, find the kth distance, and let every sample at or inside that distance vote once. With fewer than k samples, use all of them. Equal vote counts produce Tie. With no samples, add one before predicting.</p>
-      <p>The model uses the labels in your data, even when a label seems geometrically wrong. It never replaces the neighbor calculation with a width-versus-height rule. Changing a label or adding an example changes the model immediately.</p>
-    </details>
+  <section class="panel experiments" id="experiments" aria-labelledby="experiments-heading"><p class="eyebrow"><span>Go further</span> Small changes, real experiments</p><h2 id="experiments-heading">What changes the answer?</h2>
+    <div class="experiment-grid"><div><h3>One unexpected label</h3><p>Try 80 × 20 with k = 1. Change H09 to Vertical. Watch the prediction and its region change.</p></div><div><h3>Your own example</h3><p>Try 50 × 50. Choose a label and add it. Compare the nearby region, then delete the new sample.</p></div><div><h3>One neighbor or three?</h3><p>Restore defaults and try 50 × 50. Switch between k = 1 and k = 3. Follow the lines and count the votes.</p></div></div>
+    <details><summary>What is the model actually doing?</summary><p>This classroom model uses numeric features (width and height) and labeled samples. It is not image recognition and needs no neural-network training.</p><p><code>distance = √((width − sample width)² + (height − sample height)²)</code></p><p>Sort by distance and let every sample at or inside the kth distance vote once. With fewer than k samples, use all of them. Equal vote counts produce Tie. With no samples, add one before predicting.</p><p>The model follows your labels even if a label seems geometrically wrong. It never replaces the neighbor calculation with a width-versus-height rule.</p></details>
   </section>
+  <footer class="credit"><span>Shape Neighbor · Sining Chen · CPSC 1710</span><span>Visual style adapted from One Pixel ML Lab by <a href="https://github.com/xiuyechen" target="_blank" rel="noopener">Xiuye Chen</a> · <a href="https://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener">CC BY 4.0</a></span></footer>
   <noscript><p>Please enable JavaScript to use this lab.</p></noscript>
 </main>
 <script>
@@ -223,7 +212,7 @@ function classify(width, height, data = samples, mode = k) {
 const plot = {left:58, top:22, size:470};
 const xPos = width => plot.left+(width-1)/99*plot.size;
 const yPos = height => plot.top+(100-height)/99*plot.size;
-const regionColors = {Horizontal:"#e1eff8",Vertical:"#ffecd9",Tie:"#e6e3ef"};
+const regionColors = {Horizontal:"#e9edff",Vertical:"#ffeadf",Tie:"#eeebf3"};
 
 function drawAxes() {
   let markup = '<rect x="58" y="22" width="470" height="470" fill="none" stroke="#7c8e9c"/>';
@@ -263,12 +252,12 @@ function drawPoints(result) {
     const x=xPos(sample.width), y=yPos(sample.height);
     const outline=voters.has(sample.id) ? `<circle cx="${x}" cy="${y}" r="10" fill="none" stroke="#172d3d" stroke-width="2"/>` : "";
     const point=sample.label === "Horizontal"
-      ? `<circle cx="${x}" cy="${y}" r="5.5" fill="#16628c" stroke="white"/>`
-      : `<rect x="${x-5.5}" y="${y-5.5}" width="11" height="11" fill="#ab4b12" stroke="white"/>`;
+      ? `<circle cx="${x}" cy="${y}" r="5.5" fill="#4f74ff" stroke="#101114"/>`
+      : `<rect x="${x-5.5}" y="${y-5.5}" width="11" height="11" fill="#ff6b35" stroke="#101114"/>`;
     return `<g data-sample="${sample.id}"><title>${sample.id}: ${sample.width} × ${sample.height}, ${sample.label}${voters.has(sample.id) ? ", voting" : ""}</title>${outline}${point}</g>`;
   }).join("");
   const x=xPos(current.width), y=yPos(current.height);
-  $("map-input").innerHTML=`<path d="M${x} ${y-9} L${x+9} ${y} L${x} ${y+9} L${x-9} ${y} Z" fill="white" fill-opacity=".85" stroke="#142231" stroke-width="2.8"><title>Current input: ${current.width} × ${current.height}</title></path>`;
+  $("map-input").innerHTML=`<path d="M${x} ${y-9} L${x+9} ${y} L${x} ${y+9} L${x-9} ${y} Z" fill="#dbff4a" fill-opacity=".95" stroke="#101114" stroke-width="2.8"><title>Current input: ${current.width} × ${current.height}</title></path>`;
   $("map-desc").textContent=`Width increases rightward and height upward, from 1 to 100. ${samples.length} samples. Input ${current.width} by ${current.height}. k = ${k}. ${result.prediction === null ? "Add samples first." : `Prediction ${result.prediction}; ${result.neighbors.length} voting neighbors: ${result.neighbors.map(s => s.id).join(", ")}.`} Circle points are Horizontal, square points are Vertical. The input is a diamond. Exact values are in the tables below.`;
 }
 function renderPrediction(result) {
@@ -308,6 +297,9 @@ function renderSamples() {
     </tr>`).join("") : '<tr><td colspan="5">No samples. Add your rectangle or restore defaults.</td></tr>';
 }
 function renderCurrent() {
+  document.querySelectorAll("[data-try]").forEach(button => {
+    button.setAttribute("aria-pressed", button.dataset.try === `${current.width},${current.height}`);
+  });
   $("width").value=current.width; $("height").value=current.height;
   $("preview").style.width=`${current.width*2}px`; $("preview").style.height=`${current.height*2}px`;
   $("preview-caption").textContent=`Width ${current.width} × height ${current.height}`;
@@ -387,6 +379,13 @@ $("add-form").addEventListener("submit",event => {
   samples.push(sample); renderSamples(); refreshModel();
   $("data-message").textContent=`Added ${sample.id}: ${sample.width} × ${sample.height}, ${sample.label}.`;
 });
+// Quick tries change only the input; experiments keep the user's data and k.
+document.querySelectorAll("[data-try]").forEach(button => button.addEventListener("click", () => {
+  const [width, height] = button.dataset.try.split(",").map(Number);
+  current = {width, height};
+  syncNumberFields();
+  renderCurrent();
+}));
 drawAxes(); drawGuide(); renderSamples(); refreshModel();
 </script>
 </body>

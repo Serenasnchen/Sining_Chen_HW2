@@ -1,10 +1,10 @@
-﻿# Homework 2: My Tiny Classifier
+# Homework 2: My Tiny Classifier
 
 Author: Sining Chen
 
 This project started with the One Pixel ML demo. The original `one-pixel.html` is preserved unchanged.
 
-## Shape Neighbor: version 2
+## Shape Neighbor: version 2.1
 
 `your-new-lab.html` is a self-contained classroom experiment in nearest-neighbor classification.
 It uses numeric width and height, both whole numbers from 1 to 100, and the labels **Horizontal** and **Vertical**.
@@ -21,7 +21,7 @@ Version 2 extends the same project with:
 - An optional dashed width = height line, explicitly labeled as a geometric guide rather than a model boundary.
 - Short experiments for changing a label, adding a sample, and comparing k values.
 
-## Open version 2 locally
+## Open the current version
 
 1. Open File Explorer and go to `C:\Users\siningchen\Desktop\课\ai\Sining_Chen_HW2`.
 2. Double-click **your-new-lab.html**. If needed, right-click it and choose **Open with → Microsoft Edge** or another browser.
@@ -30,7 +30,21 @@ Version 2 extends the same project with:
 
 The page includes all HTML, CSS, and JavaScript. It works directly from disk with JavaScript enabled and makes no network requests. There are no external libraries, APIs, paid services, application dependencies, or build steps.
 
-**Version 2 has not been deployed or pushed to GitHub.** The existing [Vercel site](https://shape-neighbor.vercel.app) still serves version 1 from the earlier deployment. Open the local file to try version 2.
+Live app: [Shape Neighbor](https://shape-neighbor.vercel.app). Source and version history: [GitHub repository](https://github.com/Serenasnchen/Sining_Chen_HW2). You can also open the local HTML directly.
+
+## Interface refresh: version 2.1
+
+The user asked to adapt the UI/UX of the course reference at `../cpsc1710-labs/lab-02/one-pixel.html` while keeping this project and its working model.
+
+- Applied the reference's warm paper background, black borders and hard shadows, bold display headings, monospace labels, lime highlights, and orange action buttons.
+- Reorganized the page into a two-column experiment workspace: shape/input/prediction on the left, model controls/map/neighbor evidence on the right. Compact sample editing and experiments follow below.
+- Added Lab / Samples / Experiments navigation, collapsible map explanations, and three Quick tries buttons. Quick tries change only width and height, preserving edited samples and k; their selected state follows the current input.
+- Retained all version 2 data operations, numeric-input validation, nearest-neighbor voting, ties, empty states, fixed preview scales, and the same classifier for the exact input and map.
+- Added source attribution in the page footer: visual style adapted from **One Pixel ML Lab by [Xiuye Chen](https://github.com/xiuyechen), CC BY 4.0**, as credited in the supplied reference. The layout, content, controls, and classifier are adapted for Shape Neighbor.
+
+The reference and the existing `one-pixel.html` were read only. The app still uses one self-contained HTML file with no dependencies or build step. Attribution links do not load any external assets.
+
+The version 2 regression suite was rerun successfully, including 20,000 default input/mode combinations and real headless Edge data-editing tests. Additional checks covered Quick tries preserving edited data and k, active states, keyboard activation, help expansion, section links, and page overflow at 1440, 1100, 1024, 820, 560, 390, and 320 pixels. Reference and implementation screenshots were compared side by side at matched desktop viewport settings, with a focused input-panel comparison and a separate mobile review. See [design QA](design-qa.md). Screen-reader and real touch testing remain manual.
 
 ## Separate resets and input validation
 
@@ -124,7 +138,9 @@ Open the local page, run the suggested experiments, and decide whether the contr
 
 The earlier hosting configuration serves `your-new-lab.html` at `/`. `.vercelignore` includes only that page and `vercel.json`; the original demo stays local. `.gitignore` excludes local Vercel metadata and environment files.
 
-No deployment was made for version 2. After a future request to publish, the existing project can be updated from this folder with `npx.cmd --yes vercel --prod`. Vercel is also connected to the GitHub repository, so future pushes can trigger deployments. No GitHub push was performed for this update.
+Version 2 was initially committed locally. The user subsequently authorized publishing each completed version to GitHub and Vercel. This interface refresh includes the version 2 functionality and uses the existing repository and Vercel project. Continue publishing checked versions unless the user changes that instruction.
+
+Vercel is connected to the GitHub repository; a push can trigger a deployment. Direct deployment is also available with `npx.cmd --yes vercel --prod`. The deployment allowlist excludes the original demo, README, design QA, Git metadata, and environment files.
 
 ## Development log
 
@@ -151,3 +167,11 @@ No deployment was made for version 2. After a future request to publish, the exi
 - Completed the version 2 automated calculations, real headless Edge interaction checks, map consistency checks, and screenshot inspection listed above. Manual student usability testing is still pending.
 - Preserved `one-pixel.html` and the existing deployment configuration. Requested commit: `Expand Shape Neighbor with editable samples and decision map`. No GitHub push or Vercel deployment was made for version 2.
 - No classmate feedback, personal reflection, or additional guidance records were supplied or invented.
+
+### 2026-09-21 — Version 2.1: One Pixel-inspired interface
+
+- Actual user feedback: the existing UI/UX was unattractive. The user provided the course One Pixel HTML as the visual and interaction reference and authorized publishing each version to GitHub and Vercel.
+- Adapted the supplied design language, made the prediction more prominent, shortened the always-visible explanations, and added quick input examples and page-section navigation. Preserved all model/data features and the original demo.
+- Reran the calculation and real-browser regression checks, tested the new controls and seven viewport widths, and compared reference/implementation screenshots. The model itself was not changed.
+- Publication uses the existing GitHub repository and Vercel site. Only the classifier page and routing configuration are included in the Vercel payload.
+- No classmate feedback, personal reflection, or student usability observations were invented.
