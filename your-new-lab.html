@@ -1,0 +1,195 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Shape Neighbor</title>
+  <style>
+    * { box-sizing: border-box; }
+    body { margin: 0; background: #f3f5f7; color: #182d3d; font-family: system-ui, sans-serif; line-height: 1.5; }
+    main { max-width: 1040px; margin: auto; padding: 24px 16px 40px; }
+    h1, h2, h3, p { margin-top: 0; }
+    h1 { margin-bottom: 8px; }
+    h2 { font-size: 1.25rem; }
+    h3 { font-size: 1.1rem; margin-bottom: 8px; }
+    .intro { max-width: 760px; }
+    .workspace { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin: 24px 0; }
+    .panel, .reference { background: white; border: 2px solid #ccd5dd; border-radius: 10px; padding: 20px; }
+    .control { margin-bottom: 18px; }
+    label { display: block; font-weight: 650; }
+    output { font-variant-numeric: tabular-nums; }
+    input[type="range"] { width: 100%; min-height: 32px; margin: 4px 0 0; accent-color: #145d91; }
+    .range-limits { display: flex; justify-content: space-between; color: #4c5c68; font-size: 0.85rem; }
+    button { padding: 10px 18px; font: inherit; font-weight: 650; color: white; background: #145d91; border: 2px solid #145d91; border-radius: 6px; cursor: pointer; }
+    button:hover { background: #104770; }
+    :focus-visible { outline: 3px solid #925400; outline-offset: 3px; }
+    figure { margin: 0; }
+    .stage { width: 200px; height: 200px; margin: 12px auto; display: grid; place-items: center; background: #eef2f5; outline: 1px solid #ccd5dd; }
+    .shape { background: #236c9d; }
+    figcaption { text-align: center; }
+    .note { font-size: 0.9rem; color: #4c5c68; }
+    .result { border-left: 5px solid #145d91; padding: 12px 16px; margin-top: 20px; background: #eaf3fa; }
+    .result h2 { margin-bottom: 8px; }
+    .result p { margin-bottom: 0; }
+    #prediction { font-size: 1.4rem; }
+    .references { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
+    .reference.nearest { border-color: #145d91; background: #eaf3fa; }
+    .reference p { margin-bottom: 8px; }
+    .nearest-marker { display: block; min-height: 1.5em; font-weight: 700; color: #124e78; }
+    .distance { font-variant-numeric: tabular-nums; }
+    .method { margin-top: 24px; }
+    code { overflow-wrap: anywhere; }
+    @media (max-width: 600px) {
+      .workspace, .references { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <header>
+      <h1>Shape Neighbor</h1>
+      <p class="intro">Adjust a rectangle and find its nearest labeled example. This classroom demonstration uses numeric width and height. It is not image recognition.</p>
+    </header>
+
+    <div class="workspace">
+      <section class="panel" aria-labelledby="controls-heading">
+        <h2 id="controls-heading">1. Adjust your rectangle</h2>
+        <div class="control">
+          <label for="width">Width: <output id="width-value" for="width">60</output></label>
+          <input id="width" type="range" min="1" max="100" step="1" value="60">
+          <div class="range-limits" aria-hidden="true"><span>1</span><span>100</span></div>
+        </div>
+        <div class="control">
+          <label for="height">Height: <output id="height-value" for="height">30</output></label>
+          <input id="height" type="range" min="1" max="100" step="1" value="30">
+          <div class="range-limits" aria-hidden="true"><span>1</span><span>100</span></div>
+        </div>
+        <button id="reset" type="button">Reset</button>
+        <p class="note">Reset returns to width 60 and height 30.</p>
+        <div class="result" role="status" aria-live="polite" aria-atomic="true">
+          <h2>Prediction: <span id="prediction"></span></h2>
+          <p id="explanation"></p>
+        </div>
+      </section>
+
+      <section class="panel" aria-labelledby="preview-heading">
+        <h2 id="preview-heading">Your rectangle</h2>
+        <figure>
+          <div class="stage" aria-hidden="true"><div id="preview" class="shape"></div></div>
+          <figcaption id="preview-caption"></figcaption>
+        </figure>
+        <p class="note">All shapes use the same scale: 1 dimension unit = 2 screen pixels. The viewing areas stay the same size.</p>
+      </section>
+    </div>
+
+    <section aria-labelledby="references-heading">
+      <h2 id="references-heading">2. Compare the four reference examples</h2>
+      <p>Each example has a fixed label: Horizontal or Vertical. Every equally nearest example is outlined and marked “Nearest.”</p>
+      <div id="references" class="references"></div>
+      <p class="note">Distances are shown to two decimal places. Smaller means closer, not a confidence percentage. Predictions use unrounded distances.</p>
+    </section>
+
+    <section class="panel method" aria-labelledby="method-heading">
+      <h2 id="method-heading">How the prediction works</h2>
+      <p>For each example, calculate the Euclidean distance:</p>
+      <p><code>distance = √((width − example width)² + (height − example height)²)</code></p>
+      <p>Choose the label of the nearest example. If multiple nearest examples share a label, use that label. If their labels differ, show “Tie”: both classes are equally close.</p>
+      <p>The prediction comes from these four examples and their distances, rather than a direct comparison of width and height.</p>
+    </section>
+    <noscript><p>Please enable JavaScript to use the sliders and see the predictions.</p></noscript>
+  </main>
+
+  <script>
+    "use strict";
+
+    const examples = [
+      { id: "A", width: 80, height: 20, label: "Horizontal" },
+      { id: "B", width: 60, height: 30, label: "Horizontal" },
+      { id: "C", width: 20, height: 80, label: "Vertical" },
+      { id: "D", width: 30, height: 60, label: "Vertical" }
+    ];
+    const defaultWidth = 60;
+    const defaultHeight = 30;
+    const pixelsPerUnit = 2;
+    const widthSlider = document.getElementById("width");
+    const heightSlider = document.getElementById("height");
+
+    // Keep the calculation separate from the page updates.
+    function classify(width, height) {
+      const distances = examples.map(example => ({
+        ...example,
+        distance: Math.sqrt((width - example.width) ** 2 + (height - example.height) ** 2)
+      }));
+      const minimum = Math.min(...distances.map(example => example.distance));
+      // Integer inputs make equal squared distances exactly equal here.
+      // Do not round before finding ALL the nearest examples.
+      const nearest = distances.filter(example => example.distance === minimum);
+      const labels = new Set(nearest.map(example => example.label));
+      const prediction = labels.size === 1 ? nearest[0].label : "Tie";
+      return { distances, nearest, prediction };
+    }
+
+    function sizeShape(shape, width, height) {
+      shape.style.width = `${width * pixelsPerUnit}px`;
+      shape.style.height = `${height * pixelsPerUnit}px`;
+    }
+
+    // The examples and labels are fixed in this first version.
+    const referenceContainer = document.getElementById("references");
+    examples.forEach(example => {
+      const card = document.createElement("article");
+      card.className = "reference";
+      card.id = `example-${example.id}`;
+      card.innerHTML = `
+        <h3>${example.id}: ${example.label}</h3>
+        <figure>
+          <div class="stage" aria-hidden="true"><div class="shape"></div></div>
+          <figcaption>Width ${example.width} × height ${example.height}</figcaption>
+        </figure>
+        <p>Distance: <strong class="distance"></strong></p>
+        <span class="nearest-marker"></span>`;
+      sizeShape(card.querySelector(".shape"), example.width, example.height);
+      referenceContainer.appendChild(card);
+    });
+
+    function update() {
+      const width = Number(widthSlider.value);
+      const height = Number(heightSlider.value);
+      const result = classify(width, height);
+      document.getElementById("width-value").value = width;
+      document.getElementById("height-value").value = height;
+      sizeShape(document.getElementById("preview"), width, height);
+      document.getElementById("preview-caption").textContent = `Width ${width} × height ${height}`;
+      document.getElementById("prediction").textContent = result.prediction;
+
+      const ids = result.nearest.map(example => example.id).join(", ");
+      let explanation;
+      if (result.prediction === "Tie") {
+        explanation = `Examples ${ids} are equally nearest. Both classes are equally close, so the prediction is Tie.`;
+      } else if (result.nearest.length > 1) {
+        explanation = `Examples ${ids} are equally nearest and all are labeled ${result.prediction}, so the prediction is ${result.prediction}.`;
+      } else {
+        explanation = `Example ${ids} is nearest. Its label is ${result.prediction}, so the prediction is ${result.prediction}.`;
+      }
+      document.getElementById("explanation").textContent = explanation;
+
+      result.distances.forEach(example => {
+        const card = document.getElementById(`example-${example.id}`);
+        const isNearest = result.nearest.some(neighbor => neighbor.id === example.id);
+        card.classList.toggle("nearest", isNearest);
+        card.querySelector(".distance").textContent = example.distance.toFixed(2);
+        card.querySelector(".nearest-marker").textContent = isNearest ? "Nearest" : "";
+      });
+    }
+
+    widthSlider.addEventListener("input", update);
+    heightSlider.addEventListener("input", update);
+    document.getElementById("reset").addEventListener("click", () => {
+      widthSlider.value = defaultWidth;
+      heightSlider.value = defaultHeight;
+      update();
+    });
+    update();
+  </script>
+</body>
+</html>
