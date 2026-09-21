@@ -24,6 +24,26 @@ Reset restores width 60 and height 30.
 
 The file contains its own HTML, CSS, and JavaScript. It works directly from disk with JavaScript enabled; no server, build step, external dependencies, API keys, or paid services are required.
 
+## Vercel hosting
+
+Live page: [Shape Neighbor](https://shape-neighbor.vercel.app).
+
+The Vercel configuration serves `your-new-lab.html` at the website's root URL.
+The original demo remains in the local project and is excluded from this deployment.
+`.vercelignore` limits the deployment to `your-new-lab.html` and `vercel.json`.
+The local Vercel project link in `.vercel/` and environment files are excluded from Git.
+
+To deploy from this folder with Node.js and npm installed:
+
+```powershell
+npx.cmd --yes vercel login
+npx.cmd --yes vercel --prod
+```
+
+This uploads the local files to Vercel directly; it does not push commits to GitHub.
+Vercel linked the project to the existing GitHub repository during setup; future pushes can trigger Git-based deployments.
+The original double-click opening instructions still work.
+
 ## Classification method
 
 | Example | Width | Height | Label |
@@ -85,3 +105,11 @@ Still to do in your browser:
 - Implementation: added `your-new-lab.html` with two integer sliders, a fixed-scale preview, four fixed reference examples, Euclidean distances, complete nearest-example highlighting, explicit tie handling, prediction explanations, and Reset.
 - Verification: completed the automated calculation and simulated-DOM checks listed above. Actual browser checks remain for the student.
 - Scope: reference-label editing and further development are deferred until the student opens and tests this version. No student observations, classmate feedback, or personal reflection have been supplied or invented.
+
+### 2026-09-21 — Vercel deployment
+
+- Request: publish the first version to Vercel. The user completed Vercel's account authorization.
+- Added static hosting configuration, a homepage route, and deployment/Git exclusions. Created the `shape-neighbor` Vercel project and deployed to https://shape-neighbor.vercel.app.
+- The final upload contained only `your-new-lab.html` and `vercel.json`. An earlier attempt that included the original page was rejected by automatic approval review and did not execute; the upload was narrowed before retrying.
+- Verified public HTTP 200 responses for `/` and `/your-new-lab.html`, with response bodies exactly matching the local classifier. Verified `/one-pixel.html` returns HTTP 404. No new browser-interaction or visual checks were performed.
+- Vercel connected the existing GitHub repository during project setup. This deployment used local files; no Git commits were pushed to GitHub. The classifier code and original demo were unchanged.
